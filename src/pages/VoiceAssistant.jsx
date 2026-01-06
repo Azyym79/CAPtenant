@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import API_BASE from "../Api";
 
 /* =========================================================
    CAPtenant Voice Assistant
@@ -11,6 +10,18 @@ import API_BASE from "../Api";
    - Pass RAW transcript + intent to LetterGenerator
    - UI language remains strictly EN / FR
 ========================================================= */
+
+/* =========================================
+   ✅ API BASE (FIXED, NO LOSS)
+   - Must hit Railway BACKEND, not frontend
+   - Uses .env VITE_API_URL if present
+   - Falls back to known backend URL
+========================================= */
+const RAW_API_BASE =
+  import.meta?.env?.VITE_API_URL || "https://captenant-production.up.railway.app";
+
+// normalize to avoid trailing slash issues
+const API_BASE = String(RAW_API_BASE).replace(/\/+$/, "");
 
 export default function VoiceAssistant() {
   const navigate = useNavigate();
@@ -38,7 +49,8 @@ export default function VoiceAssistant() {
     },
     fr: {
       title: "🎙️ Assistant vocal CAPtenant",
-      subtitle: "Posez vos questions sur vos droits locatifs à <strong>CAPtenant</strong>.",
+      subtitle:
+        "Posez vos questions sur vos droits locatifs à <strong>CAPtenant</strong>.",
       listening: "Écoute en cours...",
       youSaid: "Vous avez dit :",
       thinking: "Analyse en cours...",
@@ -144,6 +156,7 @@ export default function VoiceAssistant() {
     setError(null);
 
     try {
+      // Attempt #1
       let res = await fetch(`${API_BASE}/captenant/ask-ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -154,12 +167,18 @@ export default function VoiceAssistant() {
         })
       });
 
+      // Fallback Attempt #2
       if (!res.ok) {
         res = await fetch(`${API_BASE}/ask-ai`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text, language, strict: true })
         });
+      }
+
+      // If still not OK, stop cleanly (prevents res.json() crash)
+      if (!res.ok) {
+        throw new Error(`Backend returned ${res.status}`);
       }
 
       const data = await res.json();
