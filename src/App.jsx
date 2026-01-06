@@ -161,6 +161,13 @@ function AppShell() {
             ? "Aider les locataires de l'Ontario"
             : "Helping Ontario Tenants"}
         </p>
+
+        <p style={{ marginTop: "0.75rem", fontSize: "0.8rem", color: "#999" }}>
+  {lang === "fr"
+    ? "Avertissement : CAPtenant fournit des informations juridiques générales à des fins éducatives uniquement. Il ne s’agit pas d’un avis juridique et ne remplace pas les conseils d’un professionnel du droit ou de la Commission de la location immobilière de l’Ontario."
+    : "Disclaimer: CAPtenant provides general legal information for educational purposes only. It is not legal advice and does not replace advice from a qualified legal professional or the Ontario Landlord and Tenant Board."}
+</p>
+
       </footer>
     </div>
   );
