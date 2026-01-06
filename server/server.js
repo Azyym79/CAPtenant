@@ -30,6 +30,10 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+app.get("/", (req, res) => {
+  res.status(200).send("CAPtenant backend is running");
+});
+
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /* -------------------------------------------------------------
@@ -149,7 +153,7 @@ const analyzerHandler = async (req, res) => {
 };
 app.post("/captenant-rewrite", analyzerHandler);
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`CAPtenant backend running on http://localhost:${PORT}`);
+  console.log(`CAPtenant backend running on port ${PORT}`);
 });
