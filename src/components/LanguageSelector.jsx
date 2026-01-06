@@ -1,44 +1,35 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 
-export default function LanguageSelector() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  const currentLang = params.get("lang") || "en-US";
+/**
+ * UI Language Selector
+ * 🔒 EN / FR ONLY
+ * 🔒 No routing, no voice logic, no local state
+ * Source of truth = App.jsx
+ */
+export default function LanguageSelector({ lang, setLang }) {
+  const isFrench = lang === "fr";
 
-  const handleChange = (e) => {
-    const newLang = e.target.value;
-    
-    // Update the URL parameter without losing the current page path
-    params.set("lang", newLang);
-    navigate({
-      pathname: location.pathname,
-      search: params.toString(),
-    });
+  const toggleLanguage = () => {
+    setLang(isFrench ? "en" : "fr");
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-      <span style={{ fontSize: "12px", color: "#666", fontWeight: "bold" }}>LANG:</span>
-      <select 
-        value={currentLang} 
-        onChange={handleChange}
-        style={{ 
-          padding: "4px 8px", 
-          borderRadius: "4px", 
-          border: "1px solid #ccc",
-          cursor: "pointer",
-          background: "#f9f9f9"
-        }}
-      >
-        <option value="en-US">EN (English)</option>
-        <option value="fr-FR">FR (Français)</option>
-        <option value="es-ES">ES (Español)</option>
-        <option value="ar-SA">AR (العربية)</option>
-        {/* 🔑 Switching from UR (Native Script) to Roman Urdu to fix network errors */}
-        <option value="roman-ur">UR (Roman Urdu)</option>
-      </select>
-    </div>
+    <button
+      onClick={toggleLanguage}
+      style={{
+        padding: "6px 14px",
+        borderRadius: "20px",
+        border: "2px solid #0d6efd",
+        background: "#fff",
+        color: "#0d6efd",
+        fontWeight: "600",
+        cursor: "pointer",
+        fontSize: "14px",
+        transition: "0.2s"
+      }}
+      title={isFrench ? "Switch to English" : "Passer en français"}
+    >
+      {isFrench ? "English" : "Français"}
+    </button>
   );
 }
