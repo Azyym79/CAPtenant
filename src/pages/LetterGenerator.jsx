@@ -43,7 +43,12 @@ const UI = {
   }
 };
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+/* =========================
+   🔌 BACKEND WIRING (OPTION B)
+========================= */
+const API_BASE =
+  import.meta.env.VITE_API_URL ??
+  "https://captenant-production.up.railway.app";
 
 export default function LetterGenerator() {
   const location = useLocation();
@@ -222,7 +227,7 @@ export default function LetterGenerator() {
   };
 
   /* =========================================
-      PDF GENERATION (FIXED)
+      PDF GENERATION (UNCHANGED)
   ========================================= */
   const downloadAsPDF = () => {
     if (!rewritten) return;
@@ -231,31 +236,24 @@ export default function LetterGenerator() {
       const doc = new jsPDF();
       let y = 20;
 
-      // 1. Add Logo if valid
       if (logoBase64 && logoBase64.startsWith("data:image")) {
         try {
           doc.addImage(logoBase64, "PNG", 15, y, 30, 30);
           y += 40;
-        } catch (e) {
-          console.warn("Logo image failed to load in PDF", e);
-          y += 10; // Fallback spacing
+        } catch {
+          y += 10;
         }
       }
 
-      // 2. Add Subject Line
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
-      const title = subjectLine || (lang === "fr" ? "Communication" : "Communication");
-      doc.text(title, 15, y);
+      doc.text(subjectLine || "Communication", 15, y);
       y += 12;
 
-      // 3. Add Letter Content
       doc.setFontSize(11);
       doc.setFont("helvetica", "normal");
-      
       const lines = doc.splitTextToSize(rewritten, 180);
-      
-      // Handle simple page overflow for long letters
+
       lines.forEach(line => {
         if (y > 280) {
           doc.addPage();
@@ -265,7 +263,6 @@ export default function LetterGenerator() {
         y += 7;
       });
 
-      // 4. Add Signature line
       y += 15;
       if (y > 280) { doc.addPage(); y = 20; }
       doc.text("______________________________", 15, y);
@@ -273,10 +270,8 @@ export default function LetterGenerator() {
       doc.setFont("helvetica", "italic");
       doc.text(t.signature, 15, y);
 
-      // 5. Save
       doc.save(`CAPtenant_Letter_${Date.now()}.pdf`);
-    } catch (err) {
-      console.error("PDF Generation Error:", err);
+    } catch {
       alert(lang === "fr" ? "Erreur lors de la création du PDF." : "Error creating PDF.");
     }
   };
@@ -336,18 +331,18 @@ export default function LetterGenerator() {
 
       {rewritten && (
         <>
-          <pre style={{ 
-            marginTop: "2rem", 
-            whiteSpace: "pre-wrap", 
-            background: "#fff", 
-            padding: "20px", 
-            border: "1px solid #ddd" 
+          <pre style={{
+            marginTop: "2rem",
+            whiteSpace: "pre-wrap",
+            background: "#fff",
+            padding: "20px",
+            border: "1px solid #ddd"
           }}>
             {rewritten}
           </pre>
-          
+
           {renderLegalExcerpts()}
-          
+
           <button
             onClick={downloadAsPDF}
             style={{
