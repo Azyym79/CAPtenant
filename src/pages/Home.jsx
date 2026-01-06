@@ -12,7 +12,7 @@ export default function Home() {
   const content = {
     en: {
       title: "Welcome to CAPtenant",
-      desc: "CAPtenant guides tenants through Ontario’s rental rules and rights, helping them act early and avoid unnecessary conflict.",
+      desc: "CAPtenant guides tenants through Ontario’s rental rules and rights, helping them act early and avoid unnecessary conflicts.",
       tagline: "Helping tenants find their way — before disputes escalate.",
       agiTitle: "AGI Explained",
       agiDesc: "Understand Above Guideline Rent Increases and what to do when your landlord demands too much.",
