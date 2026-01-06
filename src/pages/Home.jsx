@@ -70,34 +70,6 @@ export default function Home() {
         fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
       }}
     >
-      {/* --- BILINGUAL SWITCHER (EN-FR Only) --- */}
-      <div style={{ textAlign: "right", marginBottom: "1rem" }}>
-        <button
-          onClick={toggleLanguage}
-          style={{
-            padding: "8px 16px",
-            borderRadius: "20px",
-            border: "1px solid #0d6efd",
-            background: "#fff",
-            color: "#0d6efd",
-            fontWeight: "bold",
-            cursor: "pointer",
-            fontSize: "0.85rem",
-            transition: "all 0.3s ease",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.05)"
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.background = "#0d6efd";
-            e.target.style.color = "#fff";
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.background = "#fff";
-            e.target.style.color = "#0d6efd";
-          }}
-        >
-          {t.switchBtn}
-        </button>
-      </div>
 
       {/* --- HEADER --- */}
       <header style={{ marginBottom: "2rem" }}>
