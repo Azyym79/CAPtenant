@@ -20,11 +20,18 @@ import Glossary from "./pages/Glossary";
 import TenantPALAnalyzer from "./pages/TenantPALAnalyzer";
 
 /**
- * Root App
- * - Language is sourced from URL (?lang=fr) OR localStorage
- * - localStorage is the persistence fallback
+ * Router-safe wrapper
+ * Ensures hooks like useSearchParams are used correctly
  */
 export default function App() {
+  return (
+    <Router>
+      <AppShell />
+    </Router>
+  );
+}
+
+function AppShell() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const initialLang =
@@ -34,130 +41,138 @@ export default function App() {
 
   const [lang, setLang] = useState(initialLang);
 
-  // Keep URL + localStorage + state in sync
+  // Sync URL + localStorage + state
   useEffect(() => {
     localStorage.setItem("captenant_lang", lang);
-    setSearchParams(lang === "fr" ? { lang: "fr" } : {});
+
+    if (lang === "fr") {
+      setSearchParams({ lang: "fr" });
+    } else {
+      setSearchParams({});
+    }
   }, [lang, setSearchParams]);
 
   return (
-    <Router>
-      <div
+    <div
+      style={{
+        fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: "#fcfcfc"
+      }}
+    >
+      {/* ================= NAVIGATION BAR ================= */}
+      <nav
         style={{
-          fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-          minHeight: "100vh",
           display: "flex",
-          flexDirection: "column",
-          backgroundColor: "#fcfcfc"
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "1rem 2rem",
+          borderBottom: "1px solid #eee",
+          background: "#fff",
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+          boxShadow: "0 2px 10px rgba(0,0,0,0.03)"
         }}
       >
-        {/* ================= NAVIGATION BAR ================= */}
-        <nav
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "1rem 2rem",
-            borderBottom: "1px solid #eee",
-            background: "#fff",
-            position: "sticky",
-            top: 0,
-            zIndex: 100,
-            boxShadow: "0 2px 10px rgba(0,0,0,0.03)"
-          }}
+        {/* LEFT: LOGO */}
+        <Link
+          to={lang === "fr" ? "/?lang=fr" : "/"}
+          style={{ textDecoration: "none" }}
         >
-          {/* LEFT: LOGO & BRAND */}
-          <Link to="/" style={{ textDecoration: "none" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <FlashlightLogo />
-              <h2
-                style={{
-                  margin: 0,
-                  fontSize: "1.6rem",
-                  color: "#0d6efd",
-                  fontWeight: "bold"
-                }}
-              >
-                CAPtenant
-              </h2>
-            </div>
-          </Link>
-
-          {/* RIGHT: NAV LINKS */}
-          <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-            <NavLink to="/analyze" labelEn="Analyze" labelFr="Analyser" lang={lang} />
-            <NavLink to="/agi" labelEn="AGI Tool" labelFr="Outil AGI" lang={lang} />
-            <NavLink to="/letters" labelEn="Letters" labelFr="Lettres" lang={lang} />
-            <NavLink to="/rights" labelEn="Rights FAQ" labelFr="Droits (FAQ)" lang={lang} />
-            <NavLink to="/voice" labelEn="Voice" labelFr="Voix" lang={lang} />
-            <NavLink to="/glossary" labelEn="Glossary" labelFr="Glossaire" lang={lang} />
-
-            <div
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <FlashlightLogo />
+            <h2
               style={{
-                borderLeft: "1px solid #ddd",
-                height: "24px",
-                margin: "0 10px"
+                margin: 0,
+                fontSize: "1.6rem",
+                color: "#0d6efd",
+                fontWeight: "bold"
               }}
-            />
-
-            <LanguageSelector lang={lang} setLang={setLang} />
+            >
+              CAPtenant
+            </h2>
           </div>
-        </nav>
+        </Link>
 
-        {/* ================= MAIN CONTENT ================= */}
-        <main style={{ flex: 1 }}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/analyze" element={<TenantPALAnalyzer />} />
-            <Route path="/agi" element={<AGIExplainer />} />
-            <Route path="/letters" element={<LetterGenerator />} />
-            <Route path="/rights" element={<RightsFAQ />} />
-            <Route path="/voice" element={<VoiceAssistant />} />
-            <Route path="/glossary" element={<Glossary />} />
-          </Routes>
-        </main>
+        {/* RIGHT: NAV LINKS */}
+        <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+          <SafeLink to="/analyze" lang={lang} en="Analyze" fr="Analyser" />
+          <SafeLink to="/agi" lang={lang} en="AGI Tool" fr="Outil AGI" />
+          <SafeLink to="/letters" lang={lang} en="Letters" fr="Lettres" />
+          <SafeLink to="/rights" lang={lang} en="Rights FAQ" fr="Droits (FAQ)" />
+          <SafeLink to="/voice" lang={lang} en="Voice" fr="Voix" />
+          <SafeLink to="/glossary" lang={lang} en="Glossary" fr="Glossaire" />
 
-        {/* ================= FOOTER ================= */}
-        <footer
-          style={{
-            padding: "2rem",
-            textAlign: "center",
-            borderTop: "1px solid #eee",
-            color: "#888",
-            fontSize: "0.9rem"
-          }}
-        >
-          <p>
-            © 2025 CAPtenant —{" "}
-            {lang === "fr"
-              ? "Aider les locataires de l'Ontario"
-              : "Helping Ontario Tenants"}
-          </p>
-        </footer>
-      </div>
-    </Router>
+          <div
+            style={{
+              borderLeft: "1px solid #ddd",
+              height: "24px",
+              margin: "0 10px"
+            }}
+          />
+
+          <LanguageSelector lang={lang} setLang={setLang} />
+        </div>
+      </nav>
+
+      {/* ================= ROUTES ================= */}
+      <main style={{ flex: 1 }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/analyze" element={<TenantPALAnalyzer />} />
+          <Route path="/agi" element={<AGIExplainer />} />
+          <Route path="/letters" element={<LetterGenerator />} />
+          <Route path="/rights" element={<RightsFAQ />} />
+          <Route path="/voice" element={<VoiceAssistant />} />
+          <Route path="/glossary" element={<Glossary />} />
+        </Routes>
+      </main>
+
+      {/* ================= FOOTER ================= */}
+      <footer
+        style={{
+          padding: "2rem",
+          textAlign: "center",
+          borderTop: "1px solid #eee",
+          color: "#888",
+          fontSize: "0.9rem"
+        }}
+      >
+        <p>
+          © 2025 CAPtenant —{" "}
+          {lang === "fr"
+            ? "Aider les locataires de l'Ontario"
+            : "Helping Ontario Tenants"}
+        </p>
+      </footer>
+    </div>
   );
 }
 
 /**
- * Safer NavLink (no DOM mutation)
+ * Safe navigation link
+ * Preserves ?lang=fr across navigation
  */
-const NavLink = ({ to, labelEn, labelFr, lang }) => {
-  const label = lang === "fr" ? labelFr : labelEn;
+function SafeLink({ to, en, fr, lang }) {
+  const label = lang === "fr" ? fr : en;
+  const href = lang === "fr" ? `${to}?lang=fr` : to;
 
   return (
     <Link
-      to={to}
-      style={({ isActive }) => ({
+      to={href}
+      style={{
         textDecoration: "none",
         color: "#444",
         fontWeight: "600",
         fontSize: "15px"
-      })}
+      }}
       onMouseEnter={(e) => (e.currentTarget.style.color = "#0d6efd")}
       onMouseLeave={(e) => (e.currentTarget.style.color = "#444")}
     >
       {label}
     </Link>
   );
-};
+}
