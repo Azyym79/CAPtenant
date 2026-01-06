@@ -86,7 +86,7 @@ export default function Home() {
             fontSize: "1.15rem"
           }}
         >
-          <strong>CAPtenant</strong> {t.desc}
+        {t.desc}
         </p>
 
         <div style={{ width: "40px", height: "3px", background: "#0d6efd", marginBottom: "0.5rem" }} />
