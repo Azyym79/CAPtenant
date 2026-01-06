@@ -21,7 +21,6 @@ import TenantPALAnalyzer from "./pages/TenantPALAnalyzer";
 
 /**
  * Router-safe wrapper
- * Ensures hooks like useSearchParams are used correctly
  */
 export default function App() {
   return (
@@ -34,6 +33,13 @@ export default function App() {
 function AppShell() {
   const [searchParams, setSearchParams] = useSearchParams();
 
+  /* =====================================================
+     🌍 UI LANGUAGE (EN / FR ONLY — CANONICAL)
+     Source of truth priority:
+     1) URL ?lang=
+     2) localStorage
+     3) default "en"
+  ===================================================== */
   const initialLang =
     searchParams.get("lang") ||
     localStorage.getItem("captenant_lang") ||
@@ -41,16 +47,23 @@ function AppShell() {
 
   const [lang, setLang] = useState(initialLang);
 
-  // Sync URL + localStorage + state
+  /* =====================================================
+     🔄 SYNC STATE ↔ URL ↔ LOCALSTORAGE
+     FIX: preserve ALL existing query params
+  ===================================================== */
   useEffect(() => {
     localStorage.setItem("captenant_lang", lang);
 
+    const params = new URLSearchParams(searchParams);
+
     if (lang === "fr") {
-      setSearchParams({ lang: "fr" });
+      params.set("lang", "fr");
     } else {
-      setSearchParams({});
+      params.delete("lang");
     }
-  }, [lang, setSearchParams]);
+
+    setSearchParams(params, { replace: true });
+  }, [lang, searchParams, setSearchParams]);
 
   return (
     <div
@@ -114,6 +127,7 @@ function AppShell() {
             }}
           />
 
+          {/* UI language selector (EN / FR ONLY) */}
           <LanguageSelector lang={lang} setLang={setLang} />
         </div>
       </nav>
