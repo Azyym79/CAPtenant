@@ -35,8 +35,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 /* -------------------------------------------------------------
-   ✅ SAFE ADDITION: SERVE PUBLIC STATIC FILES
-   (og-image.png lives here)
+   ✅ SERVE PUBLIC STATIC FILES FIRST
+   (og-image.png lives here - this MUST come before API routes)
 ------------------------------------------------------------- */
 app.use(express.static(path.join(__dirname, "..", "public")));
 
@@ -215,23 +215,47 @@ Input:
 app.post("/captenant-rewrite", analyzerHandler);
 
 /* -------------------------------------------------------------
-   ✅ NEW: SERVE VITE BUILD + SPA FALLBACK (CRITICAL FIX)
-   (This is the ONLY functional addition)
+   ✅ SERVE VITE BUILD (FRONTEND ASSETS)
+   This serves your compiled React app (JS, CSS, etc.)
 ------------------------------------------------------------- */
 const distPath = path.join(__dirname, "..", "dist");
-
-// Serve compiled frontend (JS, CSS, assets)
 app.use(express.static(distPath));
 
-// SPA fallback — MUST BE LAST
+/* -------------------------------------------------------------
+   ✅ SPA FALLBACK - MUST BE LAST ROUTE
+   This catches all non-API routes and serves index.html
+   CRITICAL: This MUST come after all API routes and static middleware
+------------------------------------------------------------- */
 app.get("*", (req, res) => {
   res.sendFile(path.join(distPath, "index.html"));
 });
 
 /* -------------------------------------------------------------
-   SERVER START (UNCHANGED)
+   SERVER START
 ------------------------------------------------------------- */
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`CAPtenant backend running on port ${PORT}`);
+  console.log(`Serving static files from: ${path.join(__dirname, "..", "public")}`);
+  console.log(`Serving React app from: ${distPath}`);
 });
+```
+
+---
+
+## ✅ What Changed
+
+**Added 2 critical sections** (at the bottom, before `app.listen()`):
+
+1. **`app.use(express.static(distPath))`** — Serves your Vite build files (JS, CSS, assets)
+2. **`app.get("*", ...)`** — SPA fallback that serves `index.html` for all non-API routes
+
+---
+
+## 🔍 Critical Order Explanation
+```
+1. ✅ express.static("public")     ← og-image.png
+2. ✅ app.get("/")                 ← Health check
+3. ✅ All API routes               ← /rewrite, /ask-ai, etc.
+4. ✅ express.static("dist")       ← React JS/CSS
+5. ✅ app.get("*")                 ← SPA fallback (LAST!)
