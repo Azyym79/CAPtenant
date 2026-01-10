@@ -137,7 +137,7 @@ app.post("/rewrite-multilingual", async (req, res) => {
 });
 
 // 7. Server Start
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log("------------------------------------------");
   console.log("✅ CAPtenant AI backend running on port " + PORT);
