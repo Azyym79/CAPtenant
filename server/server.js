@@ -33,7 +33,6 @@ console.log("------------------------------------------------");
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-
 /* -------------------------------------------------------------
    ✅ SAFE ADDITION: SERVE PUBLIC STATIC FILES
    (Does NOT affect API routes)
