@@ -33,9 +33,10 @@ console.log("------------------------------------------------");
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
 /* -------------------------------------------------------------
    ✅ SAFE ADDITION: SERVE PUBLIC STATIC FILES
-   (Does NOT affect API routes)
+   (og-image.png lives here)
 ------------------------------------------------------------- */
 app.use(express.static(path.join(__dirname, "..", "public")));
 
@@ -64,20 +65,26 @@ app.post("/rewrite", async (req, res) => {
 You are CAPtenant, an expert Ontario tenant advocate.
 
 TASK:
-Write a formal tenant letter suitable for an Ontario landlord or the LTB.
+Write a formal tenant letter suitable for an Ontario landlord or the Landlord and Tenant Board (LTB).
 
 CRITICAL LANGUAGE RULES (STRICT):
 1. If target language is "fr-CA":
    - Write entirely in Canadian French.
-   - Greeting: "Madame, Monsieur," | Sign-off: "Cordialement,"
-2. For ALL other input languages (Spanish, Arabic, Urdu, English):
-   - Write the letter ENTIRELY in Canadian English.
-   - Greeting: "Dear Landlord," | Sign-off: "Sincerely,"
+   - Greeting must be: "Madame, Monsieur,"
+   - Sign-off must be: "Cordialement,"
+2. For ALL other input languages (including English, Spanish, Arabic, Urdu):
+   - Write the letter entirely in Canadian English.
+   - Greeting must be: "Dear Landlord,"
+   - Sign-off must be: "Sincerely,"
+
+STYLE:
+- Tone: "${style}"
 
 CONTEXT:
-- Tone: "${style}"
 - User Notes: "${text}"
-- Location: Ontario, Canada (Reference RTA sections if applicable).
+- Jurisdiction: Ontario, Canada
+- Reference relevant Residential Tenancies Act (RTA) sections when applicable.
+- Be clear, formal, and legally grounded.
 `;
 
     const completion = await client.chat.completions.create({
@@ -108,17 +115,19 @@ You are CAPtenant, a multilingual Ontario tenant assistant.
 
 CONVERSATION RULES:
 - Respond in the user's language: English, Canadian French, Spanish, Arabic, or Roman Urdu.
-- If language is "roman-ur", use English letters to spell Urdu words.
-- Provide helpful, empathetic advice.
+- If the language is "roman-ur", use English letters to spell Urdu words.
+- Be empathetic, accurate, and helpful.
+- Do NOT provide legal advice. Provide general legal information only.
 
-Return JSON ONLY:
+Return JSON ONLY in this exact format:
 {
   "language": "en" | "fr" | "es" | "ar" | "roman-ur",
-  "answer": "...",
-  "suggestLetter": true
+  "answer": "string",
+  "suggestLetter": true | false
 }
 
-User input: "${text}"
+User input:
+"${text}"
 `;
 
     const completion = await client.chat.completions.create({
@@ -138,17 +147,35 @@ app.post("/ask-ai", askAIHandler);
 app.post("/captenant/ask-ai", askAIHandler);
 
 /* -------------------------------------------------------------
-   ROUTE 2 & 3: ANALYZER & TRANSLATION (UNCHANGED)
+   ROUTE 2 & 3: ANALYZER & TRANSLATION
 ------------------------------------------------------------- */
 app.post("/rewrite-multilingual", async (req, res) => {
   const { text } = req.body;
   try {
-    const prompt = `Detect language. If phonetic Urdu, label "roman-ur". Return JSON {language, english, translated}. Input: ${text}`;
+    const prompt = `
+Detect the language of the input text.
+
+Rules:
+- If the text is phonetic Urdu written in English letters, label language as "roman-ur".
+- Otherwise detect normally.
+
+Return JSON ONLY:
+{
+  "language": "en" | "fr" | "es" | "ar" | "roman-ur",
+  "english": "English summary",
+  "translated": "Translated version if applicable"
+}
+
+Input:
+"${text}"
+`;
+
     const completion = await client.chat.completions.create({
       model: "gpt-4o",
       response_format: { type: "json_object" },
       messages: [{ role: "user", content: prompt }]
     });
+
     res.json(JSON.parse(completion.choices[0].message.content));
   } catch (err) {
     res.status(500).json({ error: "Failed" });
@@ -158,19 +185,48 @@ app.post("/rewrite-multilingual", async (req, res) => {
 const analyzerHandler = async (req, res) => {
   const { text } = req.body;
   try {
-    const prompt = `Analyze tenant situation. Return JSON {summary, plainLanguage, nextSteps}. Input: "${text}"`;
+    const prompt = `
+Analyze the tenant situation described below.
+
+Return JSON ONLY:
+{
+  "summary": "Short factual summary",
+  "plainLanguage": "Explanation in plain language",
+  "nextSteps": ["Step 1", "Step 2", "Step 3"]
+}
+
+Input:
+"${text}"
+`;
+
     const completion = await client.chat.completions.create({
       model: "gpt-4o",
       response_format: { type: "json_object" },
       messages: [{ role: "user", content: prompt }],
       temperature: 0.3
     });
+
     res.json(JSON.parse(completion.choices[0].message.content));
   } catch (err) {
     res.status(500).json({ error: "Failed" });
   }
 };
+
 app.post("/captenant-rewrite", analyzerHandler);
+
+/* -------------------------------------------------------------
+   ✅ NEW: SERVE VITE BUILD + SPA FALLBACK (CRITICAL FIX)
+   (This is the ONLY functional addition)
+------------------------------------------------------------- */
+const distPath = path.join(__dirname, "..", "dist");
+
+// Serve compiled frontend (JS, CSS, assets)
+app.use(express.static(distPath));
+
+// SPA fallback — MUST BE LAST
+app.get("*", (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
 
 /* -------------------------------------------------------------
    SERVER START (UNCHANGED)
