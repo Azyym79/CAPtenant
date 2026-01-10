@@ -22,7 +22,11 @@ if (!process.env.OPENAI_API_KEY) {
   console.error("❌ ERROR: OPENAI_API_KEY is missing.");
   process.exit(1);
 } else {
-  console.log("✅ API Key Loaded: " + process.env.OPENAI_API_KEY.substring(0, 5) + "...");
+  console.log(
+    "✅ API Key Loaded: " +
+      process.env.OPENAI_API_KEY.substring(0, 5) +
+      "..."
+  );
 }
 console.log("------------------------------------------------");
 
@@ -30,6 +34,15 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+/* -------------------------------------------------------------
+   ✅ SAFE ADDITION: SERVE PUBLIC STATIC FILES
+   (Does NOT affect API routes)
+------------------------------------------------------------- */
+app.use(express.static(path.join(__dirname, "..", "public")));
+
+/* -------------------------------------------------------------
+   HEALTH CHECK
+------------------------------------------------------------- */
 app.get("/", (req, res) => {
   res.status(200).send("CAPtenant backend is running");
 });
@@ -44,7 +57,8 @@ app.post("/rewrite", async (req, res) => {
   if (!text) return res.status(400).json({ error: "Missing text field." });
 
   // 🔒 HARD LOCK: Canadian Official Languages Only
-  const letterLang = (language === "fr" || language === "fr-CA") ? "fr-CA" : "en-CA";
+  const letterLang =
+    language === "fr" || language === "fr-CA" ? "fr-CA" : "en-CA";
 
   try {
     const prompt = `
@@ -73,7 +87,9 @@ CONTEXT:
       temperature: 0.5
     });
 
-    res.json({ rewritten: completion.choices[0].message.content.trim() });
+    res.json({
+      rewritten: completion.choices[0].message.content.trim()
+    });
   } catch (err) {
     console.error("Rewrite Error:", err.message);
     res.status(500).json({ error: "Rewrite failed." });
@@ -135,7 +151,9 @@ app.post("/rewrite-multilingual", async (req, res) => {
       messages: [{ role: "user", content: prompt }]
     });
     res.json(JSON.parse(completion.choices[0].message.content));
-  } catch (err) { res.status(500).json({ error: "Failed" }); }
+  } catch (err) {
+    res.status(500).json({ error: "Failed" });
+  }
 });
 
 const analyzerHandler = async (req, res) => {
@@ -149,10 +167,15 @@ const analyzerHandler = async (req, res) => {
       temperature: 0.3
     });
     res.json(JSON.parse(completion.choices[0].message.content));
-  } catch (err) { res.status(500).json({ error: "Failed" }); }
+  } catch (err) {
+    res.status(500).json({ error: "Failed" });
+  }
 };
 app.post("/captenant-rewrite", analyzerHandler);
 
+/* -------------------------------------------------------------
+   SERVER START (UNCHANGED)
+------------------------------------------------------------- */
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`CAPtenant backend running on port ${PORT}`);
