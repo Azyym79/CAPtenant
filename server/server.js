@@ -1,3 +1,4 @@
+
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -22,11 +23,7 @@ if (!process.env.OPENAI_API_KEY) {
   console.error("❌ ERROR: OPENAI_API_KEY is missing.");
   process.exit(1);
 } else {
-  console.log(
-    "✅ API Key Loaded: " +
-      process.env.OPENAI_API_KEY.substring(0, 5) +
-      "..."
-  );
+  console.log("✅ API Key Loaded: " + process.env.OPENAI_API_KEY.substring(0, 5) + "...");
 }
 console.log("------------------------------------------------");
 
@@ -34,15 +31,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-/* -------------------------------------------------------------
-   ✅ SERVE PUBLIC STATIC FILES FIRST
-   (og-image.png lives here - this MUST come before API routes)
-------------------------------------------------------------- */
-app.use(express.static(path.join(__dirname, "..", "public")));
-
-/* -------------------------------------------------------------
-   HEALTH CHECK
-------------------------------------------------------------- */
 app.get("/", (req, res) => {
   res.status(200).send("CAPtenant backend is running");
 });
@@ -57,34 +45,27 @@ app.post("/rewrite", async (req, res) => {
   if (!text) return res.status(400).json({ error: "Missing text field." });
 
   // 🔒 HARD LOCK: Canadian Official Languages Only
-  const letterLang =
-    language === "fr" || language === "fr-CA" ? "fr-CA" : "en-CA";
+  const letterLang = (language === "fr" || language === "fr-CA") ? "fr-CA" : "en-CA";
 
   try {
     const prompt = `
 You are CAPtenant, an expert Ontario tenant advocate.
 
 TASK:
-Write a formal tenant letter suitable for an Ontario landlord or the Landlord and Tenant Board (LTB).
+Write a formal tenant letter suitable for an Ontario landlord or the LTB.
 
 CRITICAL LANGUAGE RULES (STRICT):
 1. If target language is "fr-CA":
    - Write entirely in Canadian French.
-   - Greeting must be: "Madame, Monsieur,"
-   - Sign-off must be: "Cordialement,"
-2. For ALL other input languages (including English, Spanish, Arabic, Urdu):
-   - Write the letter entirely in Canadian English.
-   - Greeting must be: "Dear Landlord,"
-   - Sign-off must be: "Sincerely,"
-
-STYLE:
-- Tone: "${style}"
+   - Greeting: "Madame, Monsieur," | Sign-off: "Cordialement,"
+2. For ALL other input languages (Spanish, Arabic, Urdu, English):
+   - Write the letter ENTIRELY in Canadian English.
+   - Greeting: "Dear Landlord," | Sign-off: "Sincerely,"
 
 CONTEXT:
+- Tone: "${style}"
 - User Notes: "${text}"
-- Jurisdiction: Ontario, Canada
-- Reference relevant Residential Tenancies Act (RTA) sections when applicable.
-- Be clear, formal, and legally grounded.
+- Location: Ontario, Canada (Reference RTA sections if applicable).
 `;
 
     const completion = await client.chat.completions.create({
@@ -93,9 +74,7 @@ CONTEXT:
       temperature: 0.5
     });
 
-    res.json({
-      rewritten: completion.choices[0].message.content.trim()
-    });
+    res.json({ rewritten: completion.choices[0].message.content.trim() });
   } catch (err) {
     console.error("Rewrite Error:", err.message);
     res.status(500).json({ error: "Rewrite failed." });
@@ -115,19 +94,17 @@ You are CAPtenant, a multilingual Ontario tenant assistant.
 
 CONVERSATION RULES:
 - Respond in the user's language: English, Canadian French, Spanish, Arabic, or Roman Urdu.
-- If the language is "roman-ur", use English letters to spell Urdu words.
-- Be empathetic, accurate, and helpful.
-- Do NOT provide legal advice. Provide general legal information only.
+- If language is "roman-ur", use English letters to spell Urdu words.
+- Provide helpful, empathetic advice.
 
-Return JSON ONLY in this exact format:
+Return JSON ONLY:
 {
   "language": "en" | "fr" | "es" | "ar" | "roman-ur",
-  "answer": "string",
-  "suggestLetter": true | false
+  "answer": "...",
+  "suggestLetter": true
 }
 
-User input:
-"${text}"
+User input: "${text}"
 `;
 
     const completion = await client.chat.completions.create({
@@ -147,94 +124,37 @@ app.post("/ask-ai", askAIHandler);
 app.post("/captenant/ask-ai", askAIHandler);
 
 /* -------------------------------------------------------------
-   ROUTE 2 & 3: ANALYZER & TRANSLATION
+   ROUTE 2 & 3: ANALYZER & TRANSLATION (UNCHANGED)
 ------------------------------------------------------------- */
 app.post("/rewrite-multilingual", async (req, res) => {
   const { text } = req.body;
   try {
-    const prompt = `
-Detect the language of the input text.
-
-Rules:
-- If the text is phonetic Urdu written in English letters, label language as "roman-ur".
-- Otherwise detect normally.
-
-Return JSON ONLY:
-{
-  "language": "en" | "fr" | "es" | "ar" | "roman-ur",
-  "english": "English summary",
-  "translated": "Translated version if applicable"
-}
-
-Input:
-"${text}"
-`;
-
+    const prompt = `Detect language. If phonetic Urdu, label "roman-ur". Return JSON {language, english, translated}. Input: ${text}`;
     const completion = await client.chat.completions.create({
       model: "gpt-4o",
       response_format: { type: "json_object" },
       messages: [{ role: "user", content: prompt }]
     });
-
     res.json(JSON.parse(completion.choices[0].message.content));
-  } catch (err) {
-    res.status(500).json({ error: "Failed" });
-  }
+  } catch (err) { res.status(500).json({ error: "Failed" }); }
 });
 
 const analyzerHandler = async (req, res) => {
   const { text } = req.body;
   try {
-    const prompt = `
-Analyze the tenant situation described below.
-
-Return JSON ONLY:
-{
-  "summary": "Short factual summary",
-  "plainLanguage": "Explanation in plain language",
-  "nextSteps": ["Step 1", "Step 2", "Step 3"]
-}
-
-Input:
-"${text}"
-`;
-
+    const prompt = `Analyze tenant situation. Return JSON {summary, plainLanguage, nextSteps}. Input: "${text}"`;
     const completion = await client.chat.completions.create({
       model: "gpt-4o",
       response_format: { type: "json_object" },
       messages: [{ role: "user", content: prompt }],
       temperature: 0.3
     });
-
     res.json(JSON.parse(completion.choices[0].message.content));
-  } catch (err) {
-    res.status(500).json({ error: "Failed" });
-  }
+  } catch (err) { res.status(500).json({ error: "Failed" }); }
 };
-
 app.post("/captenant-rewrite", analyzerHandler);
 
-/* -------------------------------------------------------------
-   ✅ SERVE VITE BUILD (FRONTEND ASSETS)
-   This serves your compiled React app (JS, CSS, etc.)
-------------------------------------------------------------- */
-const distPath = path.join(__dirname, "..", "dist");
-app.use(express.static(distPath));
-
-/* -------------------------------------------------------------
-   ✅ SPA FALLBACK - MUST BE LAST ROUTE
-   🔥 CRITICAL FIX: Use "/*" not "*" to avoid PathError crash
-------------------------------------------------------------- */
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
-});
-
-/* -------------------------------------------------------------
-   SERVER START
-------------------------------------------------------------- */
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`CAPtenant backend running on port ${PORT}`);
-  console.log(`Serving static files from: ${path.join(__dirname, "..", "public")}`);
-  console.log(`Serving React app from: ${distPath}`);
 });
