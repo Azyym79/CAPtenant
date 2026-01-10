@@ -223,10 +223,9 @@ app.use(express.static(distPath));
 
 /* -------------------------------------------------------------
    ✅ SPA FALLBACK - MUST BE LAST ROUTE
-   This catches all non-API routes and serves index.html
-   CRITICAL: This MUST come after all API routes and static middleware
+   🔥 CRITICAL FIX: Use "/*" not "*" to avoid PathError crash
 ------------------------------------------------------------- */
-app.get("*", (req, res) => {
+app.get("/*", (req, res) => {
   res.sendFile(path.join(distPath, "index.html"));
 });
 
@@ -239,23 +238,3 @@ app.listen(PORT, () => {
   console.log(`Serving static files from: ${path.join(__dirname, "..", "public")}`);
   console.log(`Serving React app from: ${distPath}`);
 });
-```
-
----
-
-## ✅ What Changed
-
-**Added 2 critical sections** (at the bottom, before `app.listen()`):
-
-1. **`app.use(express.static(distPath))`** — Serves your Vite build files (JS, CSS, assets)
-2. **`app.get("*", ...)`** — SPA fallback that serves `index.html` for all non-API routes
-
----
-
-## 🔍 Critical Order Explanation
-```
-1. ✅ express.static("public")     ← og-image.png
-2. ✅ app.get("/")                 ← Health check
-3. ✅ All API routes               ← /rewrite, /ask-ai, etc.
-4. ✅ express.static("dist")       ← React JS/CSS
-5. ✅ app.get("*")                 ← SPA fallback (LAST!)
