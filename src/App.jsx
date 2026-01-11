@@ -4,7 +4,8 @@ import {
   Routes,
   Route,
   Link,
-  useSearchParams
+  useSearchParams,
+  useLocation
 } from "react-router-dom";
 
 import FlashlightLogo from "./components/FlashlightLogo";
@@ -30,12 +31,53 @@ export default function App() {
   );
 }
 
+/* =====================================================
+   🔒 GLOBAL INFORMATIONAL NOTICE (SAFE LANGUAGE)
+   - Applies to ALL pages
+   - No reference to "legal information"
+   - Educational / tenant-rights framing only
+===================================================== */
+function GlobalNotice({ lang }) {
+  return (
+    <div
+      style={{
+        background: "#f8f9fa",
+        borderBottom: "1px solid #e5e7eb",
+        padding: "10px 16px",
+        fontSize: "0.85rem",
+        color: "#555",
+        textAlign: "center"
+      }}
+    >
+      {lang === "fr" ? (
+        <>
+          <strong>Information seulement.</strong> CAPtenant fournit des
+          informations générales sur les droits des locataires et les règles de
+          logement en Ontario, à des fins éducatives uniquement. Ce service ne
+          constitue pas un avis juridique et ne remplace pas les renseignements
+          fournis par la Commission de la location immobilière de l’Ontario ou un
+          professionnel du droit.
+        </>
+      ) : (
+        <>
+          <strong>For informational purposes only.</strong> CAPtenant provides
+          general information about tenant rights and housing rules in Ontario
+          for educational purposes only. This is not legal advice and does not
+          replace guidance from the Ontario Landlord and Tenant Board or a
+          qualified legal professional.
+        </>
+      )}
+    </div>
+  );
+}
+
 function AppShell() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
 
   /* =====================================================
      🌍 UI LANGUAGE (EN / FR ONLY — CANONICAL)
-     Source of truth priority:
+     Priority:
      1) URL ?lang=
      2) localStorage
      3) default "en"
@@ -49,7 +91,7 @@ function AppShell() {
 
   /* =====================================================
      🔄 SYNC STATE ↔ URL ↔ LOCALSTORAGE
-     FIX: preserve ALL existing query params
+     Preserves ALL existing query params
   ===================================================== */
   useEffect(() => {
     localStorage.setItem("captenant_lang", lang);
@@ -127,10 +169,12 @@ function AppShell() {
             }}
           />
 
-          {/* UI language selector (EN / FR ONLY) */}
           <LanguageSelector lang={lang} setLang={setLang} />
         </div>
       </nav>
+
+      {/* 🔒 GLOBAL INFORMATIONAL NOTICE */}
+      <GlobalNotice lang={lang} />
 
       {/* ================= ROUTES ================= */}
       <main style={{ flex: 1 }}>
@@ -158,16 +202,15 @@ function AppShell() {
         <p>
           © 2025 CAPtenant —{" "}
           {lang === "fr"
-            ? "Aider les locataires de l'Ontario"
+            ? "Aider les locataires de l’Ontario"
             : "Helping Ontario Tenants"}
         </p>
 
         <p style={{ marginTop: "0.75rem", fontSize: "0.8rem", color: "#999" }}>
-  {lang === "fr"
-    ? "Avertissement : CAPtenant fournit des informations juridiques générales à des fins éducatives uniquement. Il ne s’agit pas d’un avis juridique et ne remplace pas les conseils d’un professionnel du droit ou de la Commission de la location immobilière de l’Ontario."
-    : "Disclaimer: CAPtenant provides general legal information for educational purposes only. It is not legal advice and does not replace advice from a qualified legal professional or the Ontario Landlord and Tenant Board."}
-</p>
-
+          {lang === "fr"
+            ? "CAPtenant est une plateforme éducative indépendante axée sur l’information des locataires. Elle ne fournit pas de conseils juridiques."
+            : "CAPtenant is an independent educational platform focused on tenant information. It does not provide legal advice."}
+        </p>
       </footer>
     </div>
   );
