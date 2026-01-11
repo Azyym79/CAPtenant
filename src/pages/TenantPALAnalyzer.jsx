@@ -5,32 +5,42 @@ import API_BASE from "../Api";
 export default function TenantPALAnalyzer() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  
-  // 🇨🇦 Bilingual Lock: Defaults to English unless 'fr' is specifically in the URL
+
+  // 🇨🇦 Bilingual UI lock (EN / FR only)
   const lang = params.get("lang") === "fr" ? "fr" : "en";
 
   const t = {
     en: {
       title: "CAPtenant – Situation Analyzer",
-      subtitle: "Understand your legal position in seconds.",
-      placeholder: "Paste tenant-related text here (notice, email, message, etc.)…",
+      subtitle:
+        "Get a clear, structured overview of your tenant situation based on the information you provide.",
+      placeholder:
+        "Paste tenant-related text here (notice, email, message, or description)…",
       analyze: "Analyze with CAPtenant",
-      analyzing: "CAPtenant AI is thinking...",
-      error: "Could not reach the backend. Ensure your server is active on port 3001.",
-      summary: "Summary",
-      plain: "Plain Language Explanation",
-      steps: "Recommended Next Steps"
+      analyzing: "CAPtenant is processing your information...",
+      error:
+        "Unable to reach the service. Please ensure the server is available.",
+      summary: "Situation Summary",
+      plain: "Plain-Language Overview",
+      steps: "Suggested Next Considerations",
+      disclaimer:
+        "This tool provides general information and educational summaries only. It does not replace official sources or professional guidance."
     },
     fr: {
       title: "CAPtenant – Analyseur de situation",
-      subtitle: "Comprenez votre position juridique en quelques secondes.",
-      placeholder: "Collez ici un texte lié à votre situation (avis, courriel, message, etc.)…",
+      subtitle:
+        "Obtenez un aperçu clair et structuré de votre situation locative à partir des informations fournies.",
+      placeholder:
+        "Collez ici un texte lié à votre situation (avis, courriel, message ou description)…",
       analyze: "Analyser avec CAPtenant",
-      analyzing: "L'IA de CAPtenant réfléchit...",
-      error: "Impossible de joindre le serveur. Vérifiez qu'il est actif sur le port 3001.",
-      summary: "Résumé",
-      plain: "Explication en langage clair",
-      steps: "Prochaines étapes recommandées"
+      analyzing: "CAPtenant traite les informations...",
+      error:
+        "Impossible de joindre le service. Veuillez vérifier que le serveur est accessible.",
+      summary: "Résumé de la situation",
+      plain: "Aperçu en langage clair",
+      steps: "Pistes de réflexion suggérées",
+      disclaimer:
+        "Cet outil fournit des informations générales et des résumés éducatifs uniquement. Il ne remplace pas les sources officielles ni un accompagnement professionnel."
     }
   }[lang];
 
@@ -47,11 +57,11 @@ export default function TenantPALAnalyzer() {
     setResult(null);
 
     try {
-      // Primary Route
+      // Primary route
       let response = await fetch(`${API_BASE}/captenant-rewrite`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, lang }),
+        body: JSON.stringify({ text, lang })
       });
 
       // 🔁 Fallback for legacy support
@@ -59,23 +69,22 @@ export default function TenantPALAnalyzer() {
         response = await fetch(`${API_BASE}/tenantpal-rewrite`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, lang }),
+          body: JSON.stringify({ text, lang })
         });
       }
 
       if (!response.ok) throw new Error("API_ERROR");
 
       const data = await response.json();
-      
-      // ✅ Added check to ensure data structure is valid before rendering
+
+      // ✅ Defensive check before rendering
       if (data && data.summary) {
         setResult(data);
       } else {
         throw new Error("EMPTY_DATA");
       }
-
     } catch (err) {
-      console.error("Analysis Error:", err);
+      console.error("Analyzer Error:", err);
       setError(t.error);
     } finally {
       setLoading(false);
@@ -83,9 +92,45 @@ export default function TenantPALAnalyzer() {
   };
 
   return (
-    <div style={{ maxWidth: "950px", margin: "3rem auto", padding: "2rem", fontFamily: "'Segoe UI', Tahoma, sans-serif" }}>
-      <h1 style={{ color: "#333", fontSize: "2.2rem", marginBottom: "0.5rem" }}>{t.title}</h1>
-      <p style={{ color: "#666", marginBottom: "2rem", fontSize: "1.1rem" }}>{t.subtitle}</p>
+    <div
+      style={{
+        maxWidth: "950px",
+        margin: "3rem auto",
+        padding: "2rem",
+        fontFamily: "'Segoe UI', Tahoma, sans-serif"
+      }}
+    >
+      <h1
+        style={{
+          color: "#333",
+          fontSize: "2.2rem",
+          marginBottom: "0.5rem"
+        }}
+      >
+        {t.title}
+      </h1>
+
+      <p
+        style={{
+          color: "#666",
+          marginBottom: "1.5rem",
+          fontSize: "1.1rem"
+        }}
+      >
+        {t.subtitle}
+      </p>
+
+      <p
+        style={{
+          fontSize: "0.85rem",
+          color: "#777",
+          borderLeft: "4px solid #ffc107",
+          paddingLeft: "1rem",
+          marginBottom: "2rem"
+        }}
+      >
+        ⚠️ {t.disclaimer}
+      </p>
 
       <textarea
         rows={10}
@@ -142,7 +187,9 @@ export default function TenantPALAnalyzer() {
           <ul style={{ ...sectionText, paddingLeft: "1.5rem" }}>
             {Array.isArray(result.nextSteps) &&
               result.nextSteps.map((step, index) => (
-                <li key={index} style={{ marginBottom: "12px" }}>{step}</li>
+                <li key={index} style={{ marginBottom: "12px" }}>
+                  {step}
+                </li>
               ))}
           </ul>
         </div>
@@ -151,7 +198,7 @@ export default function TenantPALAnalyzer() {
   );
 }
 
-// --- PRODUCTION STYLES ---
+/* ================= STYLES ================= */
 const resultCard = {
   marginTop: "3rem",
   padding: "2.5rem",
@@ -161,6 +208,25 @@ const resultCard = {
   boxShadow: "0 10px 25px rgba(0,0,0,0.05)"
 };
 
-const sectionHeader = { color: "#0d6efd", fontSize: "1.4rem", borderBottom: "2px solid #f0f4f8", paddingBottom: "8px", marginBottom: "1rem" };
-const sectionText = { lineHeight: "1.7", fontSize: "1.15rem", color: "#2d3748" };
-const errorContainer = { marginTop: "2rem", padding: "1rem", background: "#fff5f5", color: "#c53030", borderRadius: "8px", borderLeft: "5px solid #fc8181" };
+const sectionHeader = {
+  color: "#0d6efd",
+  fontSize: "1.4rem",
+  borderBottom: "2px solid #f0f4f8",
+  paddingBottom: "8px",
+  marginBottom: "1rem"
+};
+
+const sectionText = {
+  lineHeight: "1.7",
+  fontSize: "1.15rem",
+  color: "#2d3748"
+};
+
+const errorContainer = {
+  marginTop: "2rem",
+  padding: "1rem",
+  background: "#fff5f5",
+  color: "#c53030",
+  borderRadius: "8px",
+  borderLeft: "5px solid #fc8181"
+};
