@@ -6,62 +6,68 @@ export default function Home() {
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
 
-  // 🇨🇦 BILINGUAL REALITY: Locking UI to EN or FR only
+  // 🇨🇦 BILINGUAL REALITY: UI locked to EN or FR only
   const lang = params.get("lang") === "fr" ? "fr" : "en";
 
   const content = {
     en: {
       title: "Welcome to CAPtenant",
-      desc: "CAPtenant helps tenants understand Ontario’s rental rules and rights, supporting early communication and informed decisions.",
+      desc:
+        "CAPtenant helps tenants understand Ontario’s rental rules and tenant rights, supporting early communication and informed decisions.",
       tagline: "Helping tenants find their way — before disputes escalate.",
       agiTitle: "AGI Explained",
-      agiDesc: "Learn about Above Guideline Rent Increases and common options tenants may consider.",
+      agiDesc:
+        "Learn about Above-Guideline Rent Increases and common options tenants may consider.",
       letterTitle: "Generate Letters",
-      letterDesc: "Draft structured letters for AGI concerns, repair requests, payment plans, and more.",
+      letterDesc:
+        "Create structured draft letters for AGI concerns, repair requests, payment plans, and more.",
       rightsTitle: "Tenant Rights (Info)",
-      rightsDesc: "Learn about common tenant protections under Ontario law — simplified and easy to understand.",
+      rightsDesc:
+        "Explore common tenant protections and rental rules in Ontario — simplified and easy to understand.",
       voiceTitle: "Voice Assistant",
       voiceDesc:
-        "Describe your situation or fill in information hands-free. Supports multiple languages for convenience.",
+        "Describe your situation or provide details hands-free. Supports multiple languages for convenience.",
       voiceNote:
-        "All legal information and letters are generated in English or French.",
+        "All outputs and generated letters are provided in English or French.",
       glossaryTitle: "Glossary",
       glossaryDesc:
         "Explore commonly used rental terms like AGI, N12, eviction orders, and more — simplified.",
       switchBtn: "Français",
-      legalDisclaimer:
-        "CAPtenant provides general information only and does not offer legal advice."
+      infoDisclaimer:
+        "CAPtenant provides general information for educational purposes only."
     },
     fr: {
       title: "Bienvenue sur CAPtenant",
-      desc: "CAPtenant aide les locataires à comprendre les règles et droits locatifs en Ontario, favorisant une communication précoce et des décisions éclairées.",
-      tagline: "Aider les locataires à trouver leur voie — avant que les différends ne s’aggravent.",
+      desc:
+        "CAPtenant aide les locataires à comprendre les règles locatives et les droits des locataires en Ontario, favorisant une communication précoce et des décisions éclairées.",
+      tagline:
+        "Aider les locataires à trouver leur voie — avant que les différends ne s’aggravent.",
       agiTitle: "AGI expliqué",
       agiDesc:
         "Découvrez les augmentations de loyer au-delà de la ligne directrice et les options couramment envisagées.",
       letterTitle: "Générer des lettres",
       letterDesc:
-        "Rédigez des brouillons de lettres structurées pour les enjeux AGI, réparations, plans de paiement et plus.",
+        "Créez des brouillons de lettres structurées pour les enjeux AGI, réparations, plans de paiement et plus.",
       rightsTitle: "Droits des locataires (Info)",
       rightsDesc:
-        "Découvrez les protections locatives courantes prévues par la loi ontarienne — expliquées simplement.",
+        "Découvrez les protections locatives et règles de location courantes en Ontario — expliquées simplement.",
       voiceTitle: "Assistant vocal",
       voiceDesc:
-        "Décrivez votre situation ou saisissez des informations mains libres. Prend en charge plusieurs langues pour plus de commodité.",
+        "Décrivez votre situation ou fournissez des informations mains libres. Prend en charge plusieurs langues.",
       voiceNote:
-        "Toutes les informations juridiques et lettres sont générées en anglais ou en français.",
+        "Les résultats et lettres générées sont fournis en anglais ou en français.",
       glossaryTitle: "Glossaire",
       glossaryDesc:
         "Explorez des termes locatifs courants comme AGI, N12, avis d’expulsion et plus — simplifiés.",
       switchBtn: "English",
-      legalDisclaimer:
-        "CAPtenant fournit des informations générales uniquement et ne constitue pas un avis juridique."
+      infoDisclaimer:
+        "CAPtenant fournit des informations générales à des fins éducatives uniquement."
     }
   };
 
   const t = content[lang];
 
-  // Persist bilingual choice
+  // Preserve bilingual routing
   const withLang = (path) => (lang === "fr" ? `${path}?lang=fr` : path);
 
   const toggleLanguage = () => {
@@ -127,7 +133,7 @@ export default function Home() {
           {t.tagline}
         </p>
 
-        {/* --- GLOBAL LEGAL DISCLAIMER --- */}
+        {/* --- INFORMATIONAL NOTICE (SAFE) --- */}
         <p
           style={{
             fontSize: "0.85rem",
@@ -135,7 +141,7 @@ export default function Home() {
             maxWidth: "750px"
           }}
         >
-          {t.legalDisclaimer}
+          {t.infoDisclaimer}
         </p>
       </header>
 
