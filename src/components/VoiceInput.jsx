@@ -15,9 +15,9 @@ export default function VoiceInput() {
       </h2>
 
       <p style={{ marginBottom: "0.75rem", color: "#444", lineHeight: "1.6" }}>
-        The Voice Assistant helps you describe your situation and organize
-        information hands-free. It is designed to support understanding and
-        communication, not to provide legal advice.
+        The Voice Assistant allows you to describe your situation hands-free and
+        organize information more easily. It is designed to support clarity,
+        preparation, and communication.
       </p>
 
       <p
@@ -28,9 +28,8 @@ export default function VoiceInput() {
           lineHeight: "1.6"
         }}
       >
-        You may speak in multiple languages for convenience. All legal
-        information and generated letters are provided in English or French
-        only.
+        You may speak in multiple languages for convenience. English and French
+        are used for the primary interface and for generating written content.
       </p>
 
       <p
@@ -41,16 +40,15 @@ export default function VoiceInput() {
           paddingTop: "0.75rem"
         }}
       >
-        CAPtenant provides general information only and does not offer legal
-        advice. You remain responsible for how you use any information or
-        drafts generated.
+        CAPtenant provides general information and drafting tools only. You
+        remain responsible for reviewing, verifying, and deciding how to use
+        any generated content.
       </p>
 
-      {/* 
+      {/*
         Future voice capture and transcription UI will live here.
-        Intentionally left minimal to ensure legal-safe framing first.
+        Intentionally minimal to ensure clear, informational-only framing.
       */}
     </div>
   );
 }
-export default ()=> <div>Voice</div>;
