@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 
 export default function About() {
   const location = useLocation();
@@ -53,7 +53,9 @@ export default function About() {
         "CAPtenant’s goal is to help tenants feel more informed, prepared, and confident — without giving advice or replacing official processes.",
 
       footerNote:
-        "CAPtenant provides general information only. Nothing on this platform constitutes advice or a professional service."
+        "CAPtenant provides general information only. Nothing on this platform constitutes advice or a professional service.",
+
+      backLink: "← Back to Home"
     },
 
     fr: {
@@ -100,9 +102,13 @@ export default function About() {
         "L’objectif de CAPtenant est d’aider les locataires à se sentir mieux informés, préparés et confiants — sans fournir d’avis ni remplacer les processus officiels.",
 
       footerNote:
-        "CAPtenant fournit des informations générales uniquement. Rien sur cette plateforme ne constitue un avis ou un service professionnel."
+        "CAPtenant fournit des informations générales uniquement. Rien sur cette plateforme ne constitue un avis ou un service professionnel.",
+
+      backLink: "← Retour à l’accueil"
     }
   }[lang];
+
+  const homeHref = lang === "fr" ? "/?lang=fr" : "/";
 
   return (
     <div
@@ -145,9 +151,22 @@ export default function About() {
 
       <hr style={{ margin: "2.5rem 0" }} />
 
-      <p style={{ fontSize: "0.85rem", color: "#777" }}>
+      <p style={{ fontSize: "0.85rem", color: "#777", marginBottom: "1rem" }}>
         {t.footerNote}
       </p>
+
+      {/* Subtle navigation link */}
+      <Link
+        to={homeHref}
+        style={{
+          fontSize: "0.85rem",
+          color: "#0d6efd",
+          textDecoration: "none",
+          fontWeight: "600"
+        }}
+      >
+        {t.backLink}
+      </Link>
     </div>
   );
 }
