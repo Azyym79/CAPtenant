@@ -11,57 +11,79 @@ const ONTARIO_GUIDELINE_2025 = 2.5;
 const UI = {
   en: {
     title: "CAPtenant Letter Generator",
-    labelInput: "Draft your letter or review transported notes:",
+    labelInput: "Add notes for a draft letter (or review imported notes):",
     labelTone: "Tone:",
-    btnRewrite: "Generate / Rewrite Letter",
+    btnRewrite: "Generate / Rewrite Draft",
     placeholder: "Type your notes here...",
     working: "CAPtenant AI is working...",
     subject: "Subject",
     signature: "Tenant Signature",
-    rightsTip: "Know your rights:",
-    fromVoice: "Generated from Voice Assistant",
-    fromAgi: "Generated from AGI Explainer",
-    agiWarning: "⚖️ Legal Notice: Rent increase exceeds the guideline.",
+    rightsTip: "General info:",
+    fromVoice: "Imported from Voice Assistant",
+    fromAgi: "Imported from AGI Explainer",
+    agiWarning: "⚖️ General notice: Rent increase appears above the guideline.",
     download: "Download PDF",
-    legalRefs: "Relevant Legal Context (Ontario)"
+    legalRefs: "Relevant Legal Context (Ontario) — general info",
+
+    // ✅ Liability framing (NEW)
+    disclaimerTitle: "⚠️ Important (Informational Only)",
+    disclaimerBody:
+      "CAPtenant provides general information and drafting assistance. It does not provide legal advice, legal representation, or binding determinations. You are responsible for verifying facts, dates, and legal requirements before sending any letter.",
+    languageAuthority:
+      "Authoritative legal content in CAPtenant is provided in English and French. Other languages may be supported for input convenience only.",
+    draftNoticeTitle: "Draft letter (review before sending)",
+    draftNoticeBody:
+      "This draft is generated from the information you provided. Review and edit as needed to match your situation."
   },
   fr: {
     title: "Générateur de lettres CAPtenant",
-    labelInput: "Rédigez votre lettre ou révisez les notes transférées :",
+    labelInput: "Ajoutez des notes pour une lettre brouillon (ou révisez les notes importées) :",
     labelTone: "Ton :",
-    btnRewrite: "Générer / Réécrire la lettre",
+    btnRewrite: "Générer / Réécrire le brouillon",
     placeholder: "Tapez vos notes ici...",
     working: "L'IA de CAPtenant travaille...",
     subject: "Objet",
     signature: "Signature du locataire",
-    rightsTip: "Connaissez vos droits :",
-    fromVoice: "Généré par l'assistant vocal",
-    fromAgi: "Généré par l'outil AGI",
-    agiWarning: "⚖️ Avis juridique : l’augmentation dépasse la ligne directrice.",
+    rightsTip: "Info générale :",
+    fromVoice: "Importé de l'assistant vocal",
+    fromAgi: "Importé de l'outil AGI",
+    agiWarning: "⚖️ Avis général : l’augmentation semble dépasser la ligne directrice.",
     download: "Télécharger le PDF",
-    legalRefs: "Contexte juridique pertinent (Ontario)"
+    legalRefs: "Contexte juridique pertinent (Ontario) — info générale",
+
+    // ✅ Liability framing (NEW)
+    disclaimerTitle: "⚠️ Important (informatif seulement)",
+    disclaimerBody:
+      "CAPtenant fournit des informations générales et une aide à la rédaction. Il ne constitue pas un avis juridique, une représentation, ni une décision contraignante. Vous êtes responsable de vérifier les faits, dates et exigences avant d’envoyer une lettre.",
+    languageAuthority:
+      "Le contenu juridique faisant autorité dans CAPtenant est fourni en anglais et en français. Les autres langues peuvent être offertes uniquement pour faciliter la saisie.",
+    draftNoticeTitle: "Lettre brouillon (à vérifier avant envoi)",
+    draftNoticeBody:
+      "Ce brouillon est généré à partir des informations que vous avez fournies. Relisez et ajustez selon votre situation."
   }
 };
 
 /* =========================
-   🔌 BACKEND WIRING (OPTION B)
+   🔌 BACKEND WIRING (NO LOSS)
 ========================= */
-const API_BASE =
-  import.meta.env.VITE_API_URL ??
-  "https://captenant-production.up.railway.app";
+const RAW_API_BASE =
+  import.meta.env.VITE_API_URL ?? "https://captenant-production.up.railway.app";
+
+// normalize to avoid trailing slash issues
+const API_BASE = String(RAW_API_BASE).replace(/\/+$/, "");
 
 export default function LetterGenerator() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
 
-  /* 🇨🇦 Language detection */
+  /* 🇨🇦 Language detection (NO LOSS) */
   const rawLang = params.get("lang") || "en";
   const isFrench = rawLang.toLowerCase().startsWith("fr");
   const lang = isFrench ? "fr" : "en";
   const t = UI[lang];
   const letterLanguage = isFrench ? "fr-CA" : "en-CA";
 
-  /* --- STATE --- */
+  /* --- STATE (NO LOSS) --- */
   const [inputText, setInputText] = useState("");
   const [style, setStyle] = useState("professional");
   const [rewritten, setRewritten] = useState("");
@@ -76,7 +98,7 @@ export default function LetterGenerator() {
   const incomingIntent = (params.get("intent") || "").toLowerCase();
 
   /* =========================================
-      INIT FROM QUERY (VOICE / AGI)
+      INIT FROM QUERY (VOICE / AGI) — NO LOSS
   ========================================= */
   useEffect(() => {
     const agi = Number(params.get("agiPercent"));
@@ -97,15 +119,17 @@ export default function LetterGenerator() {
       autoGeneratedRef.current = true;
       callRewriteAPI(summary, tone);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
   /* =========================================
-      RIGHTS TIP 
+      RIGHTS TIP (GENERAL INFO ONLY) — NO LOSS
   ========================================= */
   const getRightsTip = () => {
-    const lower = inputText.toLowerCase();
+    const lower = (inputText || "").toLowerCase();
     const raw = inputText || "";
 
+    // N12 / own-use / multilingual hints
     if (
       lower.includes("n12") ||
       lower.includes("own use") ||
@@ -113,27 +137,27 @@ export default function LetterGenerator() {
       /\bnikal(na)?\b/i.test(raw)
     ) {
       return lang === "fr"
-        ? "En vertu de l’article 48, une indemnité d’un mois de loyer est requise."
-        : "Under s.48, one month’s rent compensation is required.";
+        ? "Info générale : certains avis (ex. N12) peuvent exiger une indemnité. Vérifiez les exigences applicables."
+        : "General info: certain notices (e.g., N12) may require compensation. Verify requirements for your case.";
     }
 
     if (lower.includes("deposit") || raw.includes("وديعة") || lower.includes("paise")) {
       return lang === "fr"
-        ? "Les dépôts pour dommages ou animaux sont interdits."
-        : "Damage and pet deposits are illegal.";
+        ? "Info générale : certains dépôts (dommages/animaux) peuvent être interdits. Vérifiez selon votre situation."
+        : "General info: some deposits (damage/pet) may be prohibited. Verify based on your situation.";
     }
 
     return null;
   };
 
   /* =========================================
-      SMART SUBJECT
+      SMART SUBJECT — NO LOSS
   ========================================= */
   const generateTitle = () => {
     if (incomingIntent.includes("evict"))
       return lang === "fr"
-        ? "Objet : Contestation d’expulsion"
-        : "Subject: Eviction Dispute";
+        ? "Objet : Communication concernant une expulsion"
+        : "Subject: Communication Regarding Eviction";
 
     if (incomingIntent.includes("repair"))
       return lang === "fr"
@@ -146,7 +170,9 @@ export default function LetterGenerator() {
   };
 
   /* =========================================
-      AI REWRITE — LETTER ONLY
+      AI REWRITE — LETTER ONLY (LEGAL-SAFE INSTRUCTIONS)
+      - No change to flow or endpoints
+      - Adds safe drafting constraints in the prompt
   ========================================= */
   const callRewriteAPI = async (textToProcess, selectedStyle) => {
     const finalInput = textToProcess || inputText;
@@ -157,8 +183,20 @@ export default function LetterGenerator() {
 
     const baseInstruction =
       lang === "fr"
-        ? "Rédige la lettre entièrement en français canadien (fr-CA)."
-        : "Write the letter entirely in Canadian English (en-CA).";
+        ? [
+            "Rédige une lettre brouillon claire et professionnelle en français canadien (fr-CA).",
+            "Ne fournis pas de conseils juridiques; rédige une communication basée uniquement sur les faits décrits par le locataire.",
+            "Évite les affirmations absolues ou les interprétations juridiques définitives; utilise des formulations prudentes (ex.: « selon les informations fournies »).",
+            "N’inclus pas d’instructions sur la façon de contourner la loi ou d’éviter des obligations.",
+            "Conserve un ton respectueux et factuel."
+          ].join(" ")
+        : [
+            "Draft a clear, professional letter in Canadian English (en-CA).",
+            "Do not provide legal advice; draft a tenant communication based only on the facts described by the tenant.",
+            "Avoid definitive legal conclusions; use cautious language (e.g., “based on the information provided”).",
+            "Do not include instructions on how to evade legal obligations.",
+            "Keep the tone respectful and factual."
+          ].join(" ");
 
     try {
       const res = await fetch(`${API_BASE}/rewrite`, {
@@ -184,7 +222,7 @@ export default function LetterGenerator() {
   };
 
   /* =========================================
-      LEGAL EXCERPTS
+      LEGAL EXCERPTS (GENERAL INFO) — NO LOSS
   ========================================= */
   const renderLegalExcerpts = () => {
     const raw = inputText || "";
@@ -209,25 +247,37 @@ export default function LetterGenerator() {
       >
         <strong>{t.legalRefs}</strong>
         <ul style={{ marginTop: "0.5rem" }}>
-          <li><strong>s. 24</strong> — {lang === "fr"
-            ? "Les expulsions illégales et les changements de serrure sont interdits."
-            : "Illegal lockouts are prohibited."}</li>
-          <li><strong>s. 43</strong> — {lang === "fr"
-            ? "L’accès au logement exige un avis valide."
-            : "Entry requires proper notice."}</li>
-          <li><strong>s. 48</strong> — {lang === "fr"
-            ? "Conditions d’expulsion pour usage personnel (N12)."
-            : "N12 / own-use eviction requirements."}</li>
-          <li><strong>s. 83</strong> — {lang === "fr"
-            ? "La CLI peut refuser une expulsion même valide."
-            : "LTB discretion to refuse eviction."}</li>
+          <li>
+            <strong>s. 24</strong> —{" "}
+            {lang === "fr"
+              ? "Info générale : les expulsions illégales et changements de serrure sont interdits."
+              : "General info: illegal lockouts are prohibited."}
+          </li>
+          <li>
+            <strong>s. 43</strong> —{" "}
+            {lang === "fr"
+              ? "Info générale : l’accès au logement exige un avis valide."
+              : "General info: entry typically requires proper notice."}
+          </li>
+          <li>
+            <strong>s. 48</strong> —{" "}
+            {lang === "fr"
+              ? "Info générale : conditions possibles pour usage personnel (N12)."
+              : "General info: N12 / own-use eviction requirements may apply."}
+          </li>
+          <li>
+            <strong>s. 83</strong> —{" "}
+            {lang === "fr"
+              ? "Info générale : la CLI/TGO peut refuser une expulsion selon les circonstances."
+              : "General info: the LTB may have discretion in eviction outcomes."}
+          </li>
         </ul>
       </div>
     );
   };
 
   /* =========================================
-      PDF GENERATION (UNCHANGED)
+      PDF GENERATION (UNCHANGED) — NO LOSS
   ========================================= */
   const downloadAsPDF = () => {
     if (!rewritten) return;
@@ -254,7 +304,7 @@ export default function LetterGenerator() {
       doc.setFont("helvetica", "normal");
       const lines = doc.splitTextToSize(rewritten, 180);
 
-      lines.forEach(line => {
+      lines.forEach((line) => {
         if (y > 280) {
           doc.addPage();
           y = 20;
@@ -264,7 +314,10 @@ export default function LetterGenerator() {
       });
 
       y += 15;
-      if (y > 280) { doc.addPage(); y = 20; }
+      if (y > 280) {
+        doc.addPage();
+        y = 20;
+      }
       doc.text("______________________________", 15, y);
       y += 7;
       doc.setFont("helvetica", "italic");
@@ -277,17 +330,64 @@ export default function LetterGenerator() {
   };
 
   /* =========================================
-      RENDER
+      RENDER (ADDS DISCLAIMERS, NO FLOW CHANGE)
   ========================================= */
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "auto" }}>
       <h1>{t.title}</h1>
+
+      {/* Global disclaimer (NEW) */}
+      <div
+        style={{
+          marginTop: "1rem",
+          marginBottom: "1.25rem",
+          background: "#f8f9fa",
+          border: "1px solid #e9ecef",
+          borderLeft: "6px solid #ffc107",
+          borderRadius: "10px",
+          padding: "12px 14px",
+          color: "#444",
+          lineHeight: "1.5",
+          fontSize: "0.95rem"
+        }}
+      >
+        <div style={{ fontWeight: "800", marginBottom: "6px" }}>{t.disclaimerTitle}</div>
+        <div>{t.disclaimerBody}</div>
+        <div style={{ marginTop: "8px", color: "#666", fontSize: "0.9rem" }}>{t.languageAuthority}</div>
+      </div>
 
       {fromSource && (
         <div style={{ background: "#eef6ff", padding: "12px", marginBottom: "1rem" }}>
           <strong>{fromSource === "agi" ? t.fromAgi : t.fromVoice}</strong>
         </div>
       )}
+
+      {/* Above-guideline notice (kept, framed as general) */}
+      {isAboveGuideline && (
+        <div
+          style={{
+            background: "#fff3cd",
+            border: "1px solid #ffeeba",
+            padding: "12px",
+            borderRadius: "8px",
+            marginBottom: "1rem",
+            color: "#856404"
+          }}
+        >
+          <strong>{t.agiWarning}</strong>
+          {aboveGuidelinePercent !== null && (
+            <div style={{ marginTop: "6px", fontSize: "0.95rem" }}>
+              {lang === "fr"
+                ? `Dépassement estimé au-dessus de ${ONTARIO_GUIDELINE_2025}% : ${aboveGuidelinePercent}%`
+                : `Estimated above ${ONTARIO_GUIDELINE_2025}% guideline by: ${aboveGuidelinePercent}%`}
+            </div>
+          )}
+        </div>
+      )}
+
+      <label style={{ display: "block", fontWeight: "700", marginBottom: "6px" }}>
+        {t.labelInput}
+      </label>
 
       <textarea
         value={inputText}
@@ -297,8 +397,9 @@ export default function LetterGenerator() {
       />
 
       <div style={{ marginTop: "1rem" }}>
+        <label style={{ fontWeight: "700", marginRight: "8px" }}>{t.labelTone}</label>
         <select value={style} onChange={(e) => setStyle(e.target.value)}>
-          {["professional", "polite", "firm", "urgent"].map(s => (
+          {["professional", "polite", "firm", "urgent"].map((s) => (
             <option key={s}>{s}</option>
           ))}
         </select>
@@ -331,13 +432,30 @@ export default function LetterGenerator() {
 
       {rewritten && (
         <>
-          <pre style={{
-            marginTop: "2rem",
-            whiteSpace: "pre-wrap",
-            background: "#fff",
-            padding: "20px",
-            border: "1px solid #ddd"
-          }}>
+          {/* Draft banner (NEW) */}
+          <div
+            style={{
+              marginTop: "1.5rem",
+              background: "#eef6ff",
+              border: "1px solid #b6d4fe",
+              padding: "12px",
+              borderRadius: "10px",
+              color: "#2c3e50"
+            }}
+          >
+            <strong>{t.draftNoticeTitle}</strong>
+            <div style={{ marginTop: "4px", fontSize: "0.95rem" }}>{t.draftNoticeBody}</div>
+          </div>
+
+          <pre
+            style={{
+              marginTop: "1rem",
+              whiteSpace: "pre-wrap",
+              background: "#fff",
+              padding: "20px",
+              border: "1px solid #ddd"
+            }}
+          >
             {rewritten}
           </pre>
 
