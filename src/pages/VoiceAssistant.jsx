@@ -2,60 +2,59 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 /* =========================================================
-   CAPtenant Voice Assistant
-   GOAL (LOCKED):
-   - Accept multilingual voice input (EN / FR / ES / AR / Roman Urdu)
-   - NEVER translate or explain in output
-   - Detect legal intent (esp. eviction without notice)
-   - Pass RAW transcript + intent to LetterGenerator
-   - UI language remains strictly EN / FR
+   CAPtenant Voice Assistant — LEGAL-SAFE UI
+   IMPORTANT:
+   - Voice input may be multilingual
+   - ALL OUTPUT IS INFORMATIONAL ONLY
+   - NO legal advice, interpretation, or instruction
+   - EN / FR are the only authoritative legal languages
 ========================================================= */
 
 /* =========================================
-   ✅ API BASE (FIXED, NO LOSS)
-   - Must hit Railway BACKEND, not frontend
-   - Uses .env VITE_API_URL if present
-   - Falls back to known backend URL
+   API BASE (CANONICAL — NO CHANGE)
 ========================================= */
 const RAW_API_BASE =
   import.meta?.env?.VITE_API_URL || "https://captenant-production.up.railway.app";
 
-// normalize to avoid trailing slash issues
 const API_BASE = String(RAW_API_BASE).replace(/\/+$/, "");
 
 export default function VoiceAssistant() {
   const navigate = useNavigate();
 
   /* =========================================
-      🌐 LANGUAGE STRATEGY (CANONICAL)
+      🌐 LANGUAGE STRATEGY (LOCKED)
+      - UI language: EN / FR only
+      - Voice input: multilingual (input-only)
   ========================================= */
-  // Speech recognition language (not UI language)
   const [language, setLanguage] = useState("en-US");
-
-  // UI language is strictly EN / FR only
   const isUIFrench = language.toLowerCase().startsWith("fr");
 
   const t = {
     en: {
       title: "🎙️ CAPtenant Voice Assistant",
-      subtitle: "Ask <strong>CAPtenant</strong> about your rental rights.",
+      subtitle:
+        "Ask general questions about Ontario rental rules. Spoken responses are informational only and not legal advice.",
       listening: "Listening...",
       youSaid: "You said:",
       thinking: "Thinking...",
       btnLetter: "✉️ Generate Letter",
-      errorNetwork: "Network error. Try Roman Urdu mode.",
+      disclaimer:
+        "CAPtenant provides general information only. Spoken responses do not constitute legal advice and should not replace professional guidance.",
+      errorNetwork: "Network error. Please try again.",
       errorNoSpeech: "No speech detected. Please speak clearly.",
       browserError: "Speech recognition is not supported in this browser."
     },
     fr: {
       title: "🎙️ Assistant vocal CAPtenant",
       subtitle:
-        "Posez vos questions sur vos droits locatifs à <strong>CAPtenant</strong>.",
+        "Posez des questions générales sur les règles locatives en Ontario. Les réponses sont informatives seulement.",
       listening: "Écoute en cours...",
       youSaid: "Vous avez dit :",
       thinking: "Analyse en cours...",
       btnLetter: "✉️ Générer la lettre",
-      errorNetwork: "Erreur réseau. Essayez l’ourdou roman.",
+      disclaimer:
+        "CAPtenant fournit des informations générales uniquement. Les réponses vocales ne constituent pas des conseils juridiques.",
+      errorNetwork: "Erreur réseau. Veuillez réessayer.",
       errorNoSpeech: "Aucune voix détectée.",
       browserError: "La reconnaissance vocale n’est pas supportée."
     }
@@ -90,7 +89,7 @@ export default function VoiceAssistant() {
   const recognitionRef = useRef(null);
 
   /* =========================================
-      🎤 SPEECH RECOGNITION
+      🎤 SPEECH RECOGNITION (INPUT ONLY)
   ========================================= */
   const startListening = () => {
     const SpeechRecognition =
@@ -99,8 +98,6 @@ export default function VoiceAssistant() {
     if (isListening || loading) return;
 
     const recognition = new SpeechRecognition();
-
-    // 🔑 Roman Urdu MUST use en-US engine to avoid browser network crash
     recognition.lang = language === "roman-ur" ? "en-US" : language;
     recognition.continuous = false;
     recognition.interimResults = true;
@@ -147,27 +144,19 @@ export default function VoiceAssistant() {
   };
 
   /* =========================================
-      🧠 AI QUERY (STRICT INTENT MODE)
-      - AI answer is informational only
-      - REAL WORK happens in LetterGenerator
+      🧠 AI QUERY (INTENT DETECTION ONLY)
   ========================================= */
   const handleVoiceQuery = async (text) => {
     setLoading(true);
     setError(null);
 
     try {
-      // Attempt #1
       let res = await fetch(`${API_BASE}/captenant/ask-ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text,
-          language,
-          strict: true // 🔒 tells backend to infer intent, not explain language
-        })
+        body: JSON.stringify({ text, language, strict: true })
       });
 
-      // Fallback Attempt #2
       if (!res.ok) {
         res = await fetch(`${API_BASE}/ask-ai`, {
           method: "POST",
@@ -176,10 +165,7 @@ export default function VoiceAssistant() {
         });
       }
 
-      // If still not OK, stop cleanly (prevents res.json() crash)
-      if (!res.ok) {
-        throw new Error(`Backend returned ${res.status}`);
-      }
+      if (!res.ok) throw new Error();
 
       const data = await res.json();
 
@@ -199,8 +185,7 @@ export default function VoiceAssistant() {
   };
 
   /* =========================================
-      🔊 SPEECH SYNTHESIS
-      (NEVER read translations or explanations)
+      🔊 SPEECH SYNTHESIS (MIRROR ONLY)
   ========================================= */
   const speakResponse = (text, detectedLang) => {
     if (!window.speechSynthesis || !text) return;
@@ -210,9 +195,7 @@ export default function VoiceAssistant() {
 
     const langMap = {
       en: "en-US",
-      "en-CA": "en-CA",
       fr: "fr-CA",
-      "fr-CA": "fr-CA",
       es: "es-ES",
       ar: "ar-SA",
       "roman-ur": "en-US"
@@ -223,15 +206,14 @@ export default function VoiceAssistant() {
   };
 
   /* =========================================
-      ✉️ PERSISTENCE → LETTER GENERATOR
-      🔑 PASS RAW TRANSCRIPT + INTENT
+      ✉️ LETTER GENERATOR HANDOFF
   ========================================= */
   const goToLetterGenerator = () => {
     const query = new URLSearchParams({
       from: "voice",
-      lang: isUIFrench ? "fr" : "en", // UI language only
+      lang: isUIFrench ? "fr" : "en",
       intent: aiData.intent,
-      summary: transcript // 🔒 RAW text, NO translation
+      summary: transcript
     }).toString();
 
     navigate(`/letters?${query}`);
@@ -241,138 +223,44 @@ export default function VoiceAssistant() {
       UI
   ========================================= */
   return (
-    <div
-      style={{
-        maxWidth: "750px",
-        margin: "3rem auto",
-        textAlign: "center",
-        padding: "1.5rem",
-        fontFamily: "sans-serif"
-      }}
-    >
-      <h1 style={{ color: "#333", fontSize: "2.5rem" }}>{t.title}</h1>
+    <div style={{ maxWidth: "750px", margin: "3rem auto", padding: "1.5rem" }}>
+      <h1>{t.title}</h1>
+      <p style={{ color: "#666" }}>{t.subtitle}</p>
+
       <p
-        style={{ fontSize: "1.1rem", color: "#666", marginBottom: "2rem" }}
-        dangerouslySetInnerHTML={{ __html: t.subtitle }}
-      />
-
-      {/* Language selector (speech only) */}
-      <div style={{ marginBottom: "2rem" }}>
-        <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          style={{
-            padding: "12px 20px",
-            borderRadius: "10px",
-            fontSize: "1rem",
-            border: "2px solid #0d6efd",
-            cursor: "pointer"
-          }}
-        >
-          {LANGUAGES.map((l) => (
-            <option key={l.code} value={l.code}>
-              {l.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Mic button */}
-      <div
-        onClick={isListening ? () => recognitionRef.current?.stop() : startListening}
         style={{
-          width: "120px",
-          height: "120px",
-          background: isListening ? "#ff4d4d" : "#0d6efd",
-          borderRadius: "50%",
-          margin: "0 auto 2.5rem",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          transition: "0.3s",
-          boxShadow: isListening
-            ? "0 0 25px rgba(255, 77, 77, 0.6)"
-            : "0 4px 12px rgba(13, 110, 253, 0.3)"
+          fontSize: "0.85rem",
+          color: "#777",
+          borderLeft: "4px solid #ffc107",
+          paddingLeft: "1rem",
+          marginBottom: "2rem"
         }}
       >
-        <span style={{ fontSize: "50px", color: "white" }}>
-          {isListening ? "⏹" : "🎤"}
-        </span>
-      </div>
+        ⚠️ {t.disclaimer}
+      </p>
 
-      {/* Transcript */}
-      {transcript && (
-        <div
-          dir={currentLangMeta.dir}
-          style={{
-            background: "#f8f9fa",
-            padding: "1.5rem",
-            borderRadius: "12px",
-            marginBottom: "1.5rem",
-            border: "1px solid #dee2e6"
-          }}
-        >
-          <p style={{ fontSize: "1.1rem", margin: 0 }}>
-            <strong style={{ color: "#0d6efd" }}>{t.youSaid}</strong> {transcript}
-          </p>
-        </div>
-      )}
+      {/* Language selector */}
+      <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+        {LANGUAGES.map((l) => (
+          <option key={l.code} value={l.code}>
+            {l.label}
+          </option>
+        ))}
+      </select>
 
-      {loading && (
-        <p style={{ color: "#0d6efd", fontWeight: "bold" }}>
-          ⏳ {t.thinking}
-        </p>
-      )}
+      {/* Mic */}
+      <button onClick={startListening} style={{ marginTop: "2rem" }}>
+        🎤
+      </button>
 
-      {/* AI response (informational only) */}
       {aiData.answer && (
-        <div
-          dir={currentLangMeta.dir}
-          style={{
-            textAlign: currentLangMeta.dir === "rtl" ? "right" : "left",
-            background: "#eef6ff",
-            padding: "2rem",
-            borderRadius: "16px",
-            border: "1px solid #b6d4fe"
-          }}
-        >
-          <p style={{ fontSize: "1.2rem", lineHeight: "1.6", color: "#2c3e50" }}>
-            {aiData.answer}
-          </p>
-
-          <button
-            onClick={goToLetterGenerator}
-            style={{
-              marginTop: "1.5rem",
-              padding: "12px 30px",
-              background: "#28a745",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              fontWeight: "bold",
-              fontSize: "1rem",
-              cursor: "pointer"
-            }}
-          >
-            {t.btnLetter}
-          </button>
-        </div>
+        <>
+          <p>{aiData.answer}</p>
+          <button onClick={goToLetterGenerator}>{t.btnLetter}</button>
+        </>
       )}
 
-      {error && (
-        <p
-          style={{
-            color: "#dc3545",
-            marginTop: "1.5rem",
-            padding: "1rem",
-            background: "#f8d7da",
-            borderRadius: "8px"
-          }}
-        >
-          {error}
-        </p>
-      )}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 }
