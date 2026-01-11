@@ -2,12 +2,11 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 /* =========================================================
-   CAPtenant Voice Assistant — LEGAL-SAFE UI
-   IMPORTANT:
-   - Voice input may be multilingual
-   - ALL OUTPUT IS INFORMATIONAL ONLY
-   - NO legal advice, interpretation, or instruction
-   - EN / FR are the only authoritative legal languages
+   CAPtenant Voice Assistant — INFORMATIONAL UI
+   NOTES:
+   - Voice input may be multilingual (input convenience only)
+   - Responses are informational and educational in nature
+   - Generated letters and summaries are produced in EN / FR only
 ========================================================= */
 
 /* =========================================
@@ -22,7 +21,7 @@ export default function VoiceAssistant() {
   const navigate = useNavigate();
 
   /* =========================================
-      🌐 LANGUAGE STRATEGY (LOCKED)
+      🌐 LANGUAGE STRATEGY
       - UI language: EN / FR only
       - Voice input: multilingual (input-only)
   ========================================= */
@@ -33,13 +32,13 @@ export default function VoiceAssistant() {
     en: {
       title: "🎙️ CAPtenant Voice Assistant",
       subtitle:
-        "Ask general questions about Ontario rental rules. Spoken responses are informational only and not legal advice.",
+        "Ask general questions about Ontario rental rules. Spoken responses are provided for informational purposes only.",
       listening: "Listening...",
       youSaid: "You said:",
       thinking: "Thinking...",
       btnLetter: "✉️ Generate Letter",
       disclaimer:
-        "CAPtenant provides general information only. Spoken responses do not constitute legal advice and should not replace professional guidance.",
+        "CAPtenant provides general information and educational tools. Spoken responses are not a substitute for official sources or professional guidance.",
       errorNetwork: "Network error. Please try again.",
       errorNoSpeech: "No speech detected. Please speak clearly.",
       browserError: "Speech recognition is not supported in this browser."
@@ -47,13 +46,13 @@ export default function VoiceAssistant() {
     fr: {
       title: "🎙️ Assistant vocal CAPtenant",
       subtitle:
-        "Posez des questions générales sur les règles locatives en Ontario. Les réponses sont informatives seulement.",
+        "Posez des questions générales sur les règles locatives en Ontario. Les réponses sont fournies à titre informatif.",
       listening: "Écoute en cours...",
       youSaid: "Vous avez dit :",
       thinking: "Analyse en cours...",
       btnLetter: "✉️ Générer la lettre",
       disclaimer:
-        "CAPtenant fournit des informations générales uniquement. Les réponses vocales ne constituent pas des conseils juridiques.",
+        "CAPtenant fournit des informations générales et des outils éducatifs. Les réponses vocales ne remplacent pas les sources officielles ou un accompagnement professionnel.",
       errorNetwork: "Erreur réseau. Veuillez réessayer.",
       errorNoSpeech: "Aucune voix détectée.",
       browserError: "La reconnaissance vocale n’est pas supportée."
@@ -82,9 +81,6 @@ export default function VoiceAssistant() {
     { code: "ar-SA", label: "🇸🇦 العربية", dir: "rtl" },
     { code: "roman-ur", label: "🇵🇰 Roman Urdu", dir: "ltr" }
   ];
-
-  const currentLangMeta =
-    LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
 
   const recognitionRef = useRef(null);
 
@@ -144,7 +140,7 @@ export default function VoiceAssistant() {
   };
 
   /* =========================================
-      🧠 AI QUERY (INTENT DETECTION ONLY)
+      🧠 AI QUERY (INTENT + CONTEXT ONLY)
   ========================================= */
   const handleVoiceQuery = async (text) => {
     setLoading(true);
@@ -239,7 +235,6 @@ export default function VoiceAssistant() {
         ⚠️ {t.disclaimer}
       </p>
 
-      {/* Language selector */}
       <select value={language} onChange={(e) => setLanguage(e.target.value)}>
         {LANGUAGES.map((l) => (
           <option key={l.code} value={l.code}>
@@ -248,7 +243,6 @@ export default function VoiceAssistant() {
         ))}
       </select>
 
-      {/* Mic */}
       <button onClick={startListening} style={{ marginTop: "2rem" }}>
         🎤
       </button>
