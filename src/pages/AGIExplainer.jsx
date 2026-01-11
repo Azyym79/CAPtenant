@@ -12,17 +12,16 @@ export default function AGIExplainer() {
       title: "CAPtenant AGI Explainer",
       steps: ["Rent Details", "Case Type", "Analysis", "Assessment", "Letter"],
 
-      // Liability framing (NEW)
+      // Informational framing (no “legal” wording)
       infoNoticeTitle: "⚠️ Important Notice (Informational Only)",
       infoNoticeBody:
-        "This tool provides general information and estimates related to Above Guideline Rent Increases (AGI). It does not provide legal advice, legal interpretation, or determinations. Only the Landlord and Tenant Board (LTB) can approve or deny an AGI. If you need legal advice, consult a licensed professional.",
+        "This tool provides general information and estimates related to Above-Guideline Rent Increases (AGI). It does not make decisions or determinations. Only the Landlord and Tenant Board (LTB) can approve or deny an AGI. For advice tailored to your situation, consider consulting an authorized professional or official sources.",
       languageAuthority:
-        "Authoritative legal content for CAPtenant is provided in English and French. Other languages are supported for input accessibility only.",
+        "CAPtenant supports additional languages for input accessibility. English and French are the primary languages used for the app’s tenant-rights content.",
 
       currentRent: "Current Monthly Rent ($)",
       newRent: "New Rent After AGI ($)",
 
-      // Make calculations clearly estimates (wording only)
       agiIncrease: "Estimated % Increase",
       monthlyIncrease: "Estimated Monthly Increase",
       yearlyImpact: "Estimated Yearly Impact",
@@ -31,66 +30,62 @@ export default function AGIExplainer() {
       analysis: "Review Case Information",
       docsQuestion: "Did the landlord provide receipts or supporting documents?",
 
-      // “Recommendation” → Non-binding assessment (NEW)
       recommendation: "Indicative Assessment (Non-Binding)",
       resultLabel: "Indicative result:",
 
       generate: "Generate Objection Letter",
       generateDesc:
-        "Your AGI summary will be sent to the Letter Generator to help draft a professional response. You remain responsible for verifying details and choosing next steps.",
+        "Your AGI summary will be sent to the Letter Generator to help draft a structured response. You remain responsible for verifying details and choosing next steps.",
       yes: "Yes",
       no: "No",
       next: "Next →",
       generateBtn: "Generate Letter →",
 
-      legalNotice: "⚖️ Ontario Legal Context (General)",
+      // Rename section to avoid “legal”
+      ontarioContext: "📌 Ontario Context (General)",
       aboveGuideline: "Estimated above guideline by",
       notPayable:
-        "In Ontario, the AGI portion is generally not collectible unless approved by the LTB. For your situation, verify with official sources or professional advice."
+        "In Ontario, the AGI portion is generally not collectible unless approved by the LTB. For your situation, verify with official sources or an authorized professional."
     },
     fr: {
       title: "Explication AGI CAPtenant",
       steps: ["Loyer", "Type de dossier", "Analyse", "Évaluation", "Lettre"],
 
-      // Liability framing (NEW)
       infoNoticeTitle: "⚠️ Avis important (informatif seulement)",
       infoNoticeBody:
-        "Cet outil fournit des informations générales et des estimations concernant les augmentations de loyer au-delà de la ligne directrice (AGI). Il ne constitue pas un avis juridique, ni une interprétation ou décision. Seule la Commission de la location immobilière (CLI/TGO) peut approuver ou refuser une AGI. Pour un avis juridique, consultez un professionnel autorisé.",
+        "Cet outil fournit des informations générales et des estimations concernant les augmentations au-delà de la ligne directrice (AGI). Il ne rend pas de décision. Seule la Commission de la location immobilière (CLI/TGO) peut approuver ou refuser une AGI. Pour des conseils adaptés à votre situation, consultez des sources officielles ou un professionnel autorisé.",
       languageAuthority:
-        "Le contenu juridique faisant autorité dans CAPtenant est fourni en anglais et en français. Les autres langues sont offertes uniquement pour l’accessibilité de la saisie.",
+        "CAPtenant offre d’autres langues pour faciliter la saisie. L’anglais et le français sont les langues principales pour le contenu sur les droits des locataires.",
 
       currentRent: "Loyer mensuel actuel ($)",
       newRent: "Nouveau loyer après AGI ($)",
 
-      // Estimates wording
       agiIncrease: "Augmentation estimée (%)",
       monthlyIncrease: "Augmentation mensuelle estimée",
       yearlyImpact: "Impact annuel estimé",
 
       selectCase: "Sélectionnez le type de dossier AGI (catégorie générale)",
       analysis: "Analyse des informations",
-      docsQuestion:
-        "Le propriétaire a-t-il fourni des reçus ou documents justificatifs ?",
+      docsQuestion: "Le propriétaire a-t-il fourni des reçus ou documents justificatifs ?",
 
       recommendation: "Évaluation indicative (non contraignante)",
       resultLabel: "Résultat indicatif :",
 
       generate: "Générer une lettre d’opposition",
       generateDesc:
-        "Votre résumé AGI sera transmis au générateur de lettres afin d’aider à rédiger une réponse professionnelle. Vous demeurez responsable de vérifier les détails et de choisir les prochaines étapes.",
+        "Votre résumé AGI sera transmis au générateur de lettres afin d’aider à rédiger une réponse structurée. Vous demeurez responsable de vérifier les détails et de choisir les prochaines étapes.",
       yes: "Oui",
       no: "Non",
       next: "Suivant →",
       generateBtn: "Générer la lettre →",
 
-      legalNotice: "⚖️ Contexte juridique en Ontario (général)",
+      ontarioContext: "📌 Contexte en Ontario (général)",
       aboveGuideline: "Dépassement estimé de la ligne directrice de",
       notPayable:
-        "En Ontario, la portion AGI n’est généralement pas exigible sans l’approbation de la CLI/TGO. Pour votre situation, vérifiez via des sources officielles ou un avis professionnel."
+        "En Ontario, la portion AGI n’est généralement pas exigible sans l’approbation de la CLI/TGO. Pour votre situation, vérifiez via des sources officielles ou un professionnel autorisé."
     }
   }[lang];
 
-  // NOTE: Keep your constant; wording changes handle liability
   const ONTARIO_GUIDELINE_2025 = 2.5;
 
   const [step, setStep] = useState(1);
@@ -99,7 +94,7 @@ export default function AGIExplainer() {
   const [caseType, setCaseType] = useState("");
   const [hasDocs, setHasDocs] = useState(null);
 
-  // --- CALCULATIONS (UNCHANGED LOGIC; framed as estimates) ---
+  // --- CALCULATIONS (UNCHANGED) ---
   const agiPercent =
     currentRent && newRent
       ? (((newRent - currentRent) / currentRent) * 100).toFixed(2)
@@ -114,19 +109,11 @@ export default function AGIExplainer() {
     ? (Number(agiPercent) - ONTARIO_GUIDELINE_2025).toFixed(2)
     : 0;
 
-  // --- CASE TYPES (UNCHANGED) ---
+  // --- CASE TYPES (UNCHANGED DATA + FLOW) ---
   const caseTypes = [
-    {
-      en: "Elevator Modernization",
-      fr: "Modernisation des ascenseurs",
-      strength: "High"
-    },
+    { en: "Elevator Modernization", fr: "Modernisation des ascenseurs", strength: "High" },
     { en: "Roof Replacement", fr: "Remplacement de la toiture", strength: "High" },
-    {
-      en: "Boiler / HVAC Replacement",
-      fr: "Remplacement chaudière/CVC",
-      strength: "High"
-    },
+    { en: "Boiler / HVAC Replacement", fr: "Remplacement chaudière/CVC", strength: "High" },
     { en: "Electrical Upgrade", fr: "Mise à niveau électrique", strength: "Medium" },
     { en: "Plumbing Replacement", fr: "Remplacement de la plomberie", strength: "Medium" },
     { en: "Fire Safety System", fr: "Système de sécurité incendie", strength: "High" },
@@ -136,20 +123,26 @@ export default function AGIExplainer() {
     { en: "Tenant-Caused Damage", fr: "Dommages causés par le locataire", strength: "None" }
   ];
 
-  // Strength wording softened to be indicative, not determinative (NEW wording only)
+  // Softened wording (still returns a string used later)
   const getStrength = () => {
     const selected = caseTypes.find((c) => c.en === caseType || c.fr === caseType);
     if (!selected) return lang === "fr" ? "Inconnu" : "Unknown";
 
     if (selected.strength === "High")
       return hasDocs
-        ? (lang === "fr" ? "Indicativement fort (avec justificatifs)" : "Indicatively strong (with documentation)")
-        : (lang === "fr" ? "Potentiellement fort (documents requis)" : "Potentially strong (documentation needed)");
+        ? (lang === "fr"
+            ? "Indicativement fort (avec justificatifs)"
+            : "Indicatively strong (with documentation)")
+        : (lang === "fr"
+            ? "Potentiellement fort (documents requis)"
+            : "Potentially strong (documentation needed)");
 
     if (selected.strength === "Medium")
       return hasDocs
         ? (lang === "fr" ? "Modéré" : "Moderate")
-        : (lang === "fr" ? "Potentiellement faible (documents requis)" : "Potentially weak (documentation needed)");
+        : (lang === "fr"
+            ? "Potentiellement faible (documents requis)"
+            : "Potentially weak (documentation needed)");
 
     if (selected.strength === "Low")
       return lang === "fr" ? "Généralement peu probable" : "Generally unlikely";
@@ -160,14 +153,26 @@ export default function AGIExplainer() {
     return lang === "fr" ? "Inconnu" : "Unknown";
   };
 
-  // --- AUTO-POPULATE TO LETTER GENERATOR (UNCHANGED FLOW; safer language) ---
+  // --- AUTO-POPULATE TO LETTER GENERATOR (UNCHANGED FLOW) ---
   const generateLetter = () => {
     const strength = getStrength();
 
     const summary =
       lang === "fr"
-        ? `Type de dossier AGI (catégorie): ${caseType}. Augmentation estimée: ${agiPercent}%. Augmentation mensuelle estimée: $${monthlyInc}. Documents fournis: ${hasDocs ? "Oui" : "Non"}. Évaluation indicative: ${strength}.`
-        : `AGI case type (category): ${caseType}. Estimated increase: ${agiPercent}%. Estimated monthly increase: $${monthlyInc}. Documentation provided: ${hasDocs ? "Yes" : "No"}. Indicative assessment: ${strength}.`;
+        ? `Type de dossier AGI (catégorie): ${caseType}. Augmentation estimée: ${agiPercent}%. Augmentation mensuelle estimée: $${monthlyInc}. Documents fournis: ${
+            hasDocs ? "Oui" : "Non"
+          }. Évaluation indicative: ${strength}.`
+        : `AGI case type (category): ${caseType}. Estimated increase: ${agiPercent}%. Estimated monthly increase: $${monthlyInc}. Documentation provided: ${
+            hasDocs ? "Yes" : "No"
+          }. Indicative assessment: ${strength}.`;
+
+    const tone =
+      strength.toLowerCase().includes("faible") ||
+      strength.toLowerCase().includes("weak") ||
+      strength.toLowerCase().includes("peu probable") ||
+      strength.toLowerCase().includes("unlikely")
+        ? "firm"
+        : "professional";
 
     const queryParams = new URLSearchParams({
       from: "agi",
@@ -178,25 +183,32 @@ export default function AGIExplainer() {
       currentRent: currentRent,
       newRent: newRent,
       agiCase: caseType,
-      agiTone:
-        strength.toLowerCase().includes("faible") ||
-        strength.toLowerCase().includes("weak") ||
-        strength.toLowerCase().includes("peu probable") ||
-        strength.toLowerCase().includes("unlikely")
-          ? "firm"
-          : "professional"
+      agiTone: tone
     });
 
     navigate(`/letters?${queryParams.toString()}`);
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "900px", margin: "auto", fontFamily: "sans-serif" }}>
-      <h1 style={{ color: "#333", borderBottom: "2px solid #4d97ff", paddingBottom: "10px" }}>
+    <div
+      style={{
+        padding: "2rem",
+        maxWidth: "900px",
+        margin: "auto",
+        fontFamily: "sans-serif"
+      }}
+    >
+      <h1
+        style={{
+          color: "#333",
+          borderBottom: "2px solid #4d97ff",
+          paddingBottom: "10px"
+        }}
+      >
         {t.title}
       </h1>
 
-      {/* LIABILITY DISCLAIMER (NEW) */}
+      {/* Informational notice (kept, but no “legal” wording) */}
       <div
         style={{
           marginTop: "1rem",
@@ -264,8 +276,10 @@ export default function AGIExplainer() {
 
           {agiPercent && (
             <div style={calcBox}>
-              <strong>{t.agiIncrease}:</strong> {agiPercent}%<br />
-              <strong>{t.monthlyIncrease}:</strong> ${monthlyInc}<br />
+              <strong>{t.agiIncrease}:</strong> {agiPercent}%
+              <br />
+              <strong>{t.monthlyIncrease}:</strong> ${monthlyInc}
+              <br />
               <strong>{t.yearlyImpact}:</strong> ${yearlyInc}
               <div style={{ marginTop: "10px", fontSize: "0.9rem", color: "#6c757d" }}>
                 {lang === "fr"
@@ -276,9 +290,11 @@ export default function AGIExplainer() {
           )}
 
           {isAboveGuideline && (
-            <div style={legalBox}>
-              <strong>{t.legalNotice}</strong>
-              <p style={{ margin: "5px 0" }}>• {t.aboveGuideline} {abovePercent}%</p>
+            <div style={contextBox}>
+              <strong>{t.ontarioContext}</strong>
+              <p style={{ margin: "5px 0" }}>
+                • {t.aboveGuideline} {abovePercent}%
+              </p>
               <p style={{ margin: "5px 0" }}>• {t.notPayable}</p>
             </div>
           )}
@@ -293,7 +309,11 @@ export default function AGIExplainer() {
       {step === 2 && (
         <StepCard>
           <h2>{t.selectCase}</h2>
-          <select style={inputStyle} value={caseType} onChange={(e) => setCaseType(e.target.value)}>
+          <select
+            style={inputStyle}
+            value={caseType}
+            onChange={(e) => setCaseType(e.target.value)}
+          >
             <option value="">-- {t.selectCase} --</option>
             {caseTypes.map((c) => (
               <option key={c.en} value={lang === "fr" ? c.fr : c.en}>
@@ -335,7 +355,7 @@ export default function AGIExplainer() {
         </StepCard>
       )}
 
-      {/* STEP 4: ASSESSMENT (formerly Recommendation) */}
+      {/* STEP 4: ASSESSMENT */}
       {step === 4 && (
         <StepCard>
           <h2>{t.recommendation}</h2>
@@ -352,7 +372,7 @@ export default function AGIExplainer() {
             <strong>{t.resultLabel}</strong> {getStrength()}
             <div style={{ marginTop: "10px", fontSize: "0.95rem", color: "#6c757d" }}>
               {lang === "fr"
-                ? "Cette évaluation est indicative et dépend des faits et des preuves. La décision finale appartient à la CLI/TGO."
+                ? "Cette évaluation est indicative et dépend des faits et des documents. La décision finale appartient à la CLI/TGO."
                 : "This assessment is indicative and depends on facts and documentation. The final decision rests with the LTB."}
             </div>
           </div>
@@ -392,69 +412,13 @@ const StepCard = ({ children }) => (
   </div>
 );
 
-const labelStyle = {
-  display: "block",
-  marginBottom: "8px",
-  fontWeight: "bold",
-  color: "#555"
-};
+const labelStyle = { display: "block", marginBottom: "8px", fontWeight: "bold", color: "#555" };
+const inputStyle = { width: "100%", padding: "12px", borderRadius: "8px", border: "1px solid #ccc", fontSize: "16px", boxSizing: "border-box" };
+const btnStyle = { marginTop: "20px", padding: "12px 24px", background: "#4d97ff", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold", fontSize: "16px" };
+const calcBox = { marginTop: "20px", padding: "15px", background: "#f8f9fa", borderRadius: "8px", lineHeight: "1.6" };
 
-const inputStyle = {
-  width: "100%",
-  padding: "12px",
-  borderRadius: "8px",
-  border: "1px solid #ccc",
-  fontSize: "16px",
-  boxSizing: "border-box"
-};
+// renamed var to avoid “legal” naming, but style kept
+const contextBox = { marginTop: "15px", padding: "15px", background: "#fff3cd", border: "1px solid #ffeeba", borderRadius: "8px", color: "#856404", fontSize: "14px" };
 
-const btnStyle = {
-  marginTop: "20px",
-  padding: "12px 24px",
-  background: "#4d97ff",
-  color: "white",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontWeight: "bold",
-  fontSize: "16px"
-};
-
-const calcBox = {
-  marginTop: "20px",
-  padding: "15px",
-  background: "#f8f9fa",
-  borderRadius: "8px",
-  lineHeight: "1.6"
-};
-
-const legalBox = {
-  marginTop: "15px",
-  padding: "15px",
-  background: "#fff3cd",
-  border: "1px solid #ffeeba",
-  borderRadius: "8px",
-  color: "#856404",
-  fontSize: "14px"
-};
-
-const activeToggle = {
-  flex: 1,
-  padding: "12px",
-  background: "#4d97ff",
-  color: "white",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontWeight: "bold"
-};
-
-const inactiveToggle = {
-  flex: 1,
-  padding: "12px",
-  background: "#e9ecef",
-  color: "#333",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer"
-};
+const activeToggle = { flex: 1, padding: "12px", background: "#4d97ff", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" };
+const inactiveToggle = { flex: 1, padding: "12px", background: "#e9ecef", color: "#333", border: "none", borderRadius: "8px", cursor: "pointer" };
