@@ -15,9 +15,9 @@ export default function TextToSpeech() {
       </h2>
 
       <p style={{ marginBottom: "0.75rem", color: "#444", lineHeight: "1.6" }}>
-        This feature is designed to read information aloud for accessibility
-        and convenience. Spoken output mirrors on-screen text and does not
-        provide legal advice or interpretations.
+        This feature reads on-screen content aloud for accessibility and user
+        convenience. Spoken output mirrors existing text and does not introduce
+        new analysis, interpretation, or guidance.
       </p>
 
       <p
@@ -28,8 +28,8 @@ export default function TextToSpeech() {
           lineHeight: "1.6"
         }}
       >
-        All spoken legal information is generated in English or French only.
-        Any spoken summaries are informational and non-authoritative.
+        Authoritative content within CAPtenant is presented in English and
+        French. Speech playback reflects the selected interface language only.
       </p>
 
       <p
@@ -40,14 +40,14 @@ export default function TextToSpeech() {
           paddingTop: "0.75rem"
         }}
       >
-        CAPtenant provides general information only. Spoken content should not
-        be relied upon as legal advice or a substitute for professional legal
-        guidance.
+        CAPtenant provides general, informational content only. Spoken output is
+        for accessibility purposes and should not be relied upon as professional
+        or personalized guidance.
       </p>
 
       {/*
         Future text-to-speech playback logic will be implemented here.
-        This component currently establishes safe user-facing boundaries.
+        This component currently establishes clear, informational boundaries.
       */}
     </div>
   );
