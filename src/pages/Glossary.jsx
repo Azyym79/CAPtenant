@@ -3,119 +3,119 @@ import { useLocation } from "react-router-dom";
 
 /* ======================================================
    MASTER GLOSSARY (EN-CA / FR-CA)
-   Educational definitions — not legal advice
+   Informational terminology reference — educational use
 ====================================================== */
 const TERMS = [
   {
     term: { en: "Abatement of Rent", fr: "Abattement de loyer" },
     definition: {
-      en: "A monetary award or reduction in rent given to a tenant when a landlord has failed to meet their maintenance or legal obligations.",
-      fr: "Une compensation monétaire ou une réduction de loyer accordée au locataire lorsque le propriétaire ne respecte pas ses obligations d'entretien ou légales."
+      en: "A reduction or credit applied to rent when required standards of maintenance or obligations under Ontario rental rules are not met.",
+      fr: "Une réduction ou un crédit appliqué au loyer lorsque les normes d’entretien ou les obligations prévues par les règles locatives de l’Ontario ne sont pas respectées."
     }
   },
   {
     term: { en: "Adjudicator", fr: "Arbitre" },
     definition: {
-      en: "The LTB official who listens to evidence during a hearing and makes the final legal decision (Order).",
-      fr: "Le fonctionnaire de la CLI qui écoute les preuves lors d'une audience et rend la décision juridique finale (Ordonnance)."
+      en: "An official at the Landlord and Tenant Board (LTB) who reviews evidence during a hearing and issues a formal decision.",
+      fr: "Un représentant de la Commission de la location immobilière (CLI) qui examine les preuves lors d’une audience et rend une décision formelle."
     }
   },
   {
     term: { en: "Affidavit", fr: "Affidavit" },
     definition: {
-      en: "A written statement confirmed by oath or affirmation, used as evidence in LTB hearings.",
-      fr: "Une déclaration écrite confirmée sous serment ou par affirmation solennelle, utilisée comme preuve lors des audiences de la CLI."
+      en: "A written statement confirmed by oath or affirmation, commonly used as supporting evidence in tribunal proceedings.",
+      fr: "Une déclaration écrite confirmée sous serment ou affirmation solennelle, couramment utilisée comme preuve dans les procédures devant un tribunal administratif."
     }
   },
   {
     term: { en: "AGI (Above Guideline Increase)", fr: "AGI (augmentation au-delà de la ligne directrice)" },
     definition: {
-      en: "A rent increase above Ontario’s annual guideline. Landlords must apply to the Landlord and Tenant Board (LTB) and justify extraordinary costs.",
-      fr: "Une augmentation de loyer dépassant la ligne directrice annuelle en Ontario. Le propriétaire doit en faire la demande à la Commission de la location immobilière (CLI)."
+      en: "A rent increase above Ontario’s annual guideline that requires approval from the Landlord and Tenant Board based on qualifying costs.",
+      fr: "Une augmentation de loyer dépassant la ligne directrice annuelle en Ontario qui nécessite l’approbation de la Commission de la location immobilière selon certains coûts admissibles."
     }
   },
   {
     term: { en: "Arrears", fr: "Arriérés" },
     definition: {
-      en: "Unpaid rent that is past due.",
-      fr: "Loyer impayé qui est en retard."
+      en: "Unpaid rent that remains outstanding after the due date.",
+      fr: "Loyer impayé qui demeure en souffrance après la date d’échéance."
     }
   },
   {
     term: { en: "Bad Faith", fr: "Mauvaise foi" },
     definition: {
-      en: "When a landlord issues a notice (such as an N12 for personal use) without an honest intention to follow through, often to evict a tenant and re-rent at a higher price.",
-      fr: "Lorsqu'un propriétaire émet un avis (comme un N12 pour usage personnel) sans intention honnête de l'appliquer, souvent pour expulser un locataire et relouer à un loyer plus élevé."
+      en: "A situation where a notice is issued without a genuine intention to follow through, often involving misuse of permitted notice types.",
+      fr: "Situation où un avis est émis sans intention réelle de le respecter, impliquant souvent une utilisation abusive de certains types d’avis."
     }
   },
   {
     term: { en: "Compensation", fr: "Indemnisation" },
     definition: {
-      en: "Payment required by law in certain eviction cases (e.g., one month's rent for N12 notices) or awarded by the LTB for damages.",
-      fr: "Paiement exigé par la loi dans certains cas d'expulsion (ex. un mois de loyer pour un avis N12) ou accordé par la CLI à titre de dommages-intérêts."
+      en: "A required payment in certain notice scenarios or an amount awarded by the tribunal following a hearing.",
+      fr: "Paiement exigé dans certains cas d’avis ou montant accordé par le tribunal administratif à la suite d’une audience."
     }
   },
   {
     term: { en: "Eviction Order", fr: "Ordonnance d'expulsion" },
     definition: {
-      en: "A legal document issued by an LTB adjudicator that officially ends a tenancy and authorizes the Sheriff to enforce eviction.",
-      fr: "Document juridique émis par un arbitre de la CLI qui met officiellement fin à la location et autorise le shérif à procéder à l'expulsion."
+      en: "A formal order issued by the Landlord and Tenant Board that ends a tenancy and may be enforced by the Sheriff.",
+      fr: "Ordonnance formelle émise par la Commission de la location immobilière mettant fin à la location et pouvant être exécutée par le shérif."
     }
   },
   {
-    term: { en: "Form L5 (AGI Application)", fr: "Formulaire L5 (demande d’augmentation au-delà de la ligne directrice)" },
+    term: { en: "Form L5 (AGI Application)", fr: "Formulaire L5 (demande d’AGI)" },
     definition: {
-      en: "The official Landlord and Tenant Board application a landlord must file to request a rent increase above the annual guideline.",
-      fr: "Demande officielle déposée par le propriétaire auprès de la Commission de la location immobilière (CLI) afin d'obtenir l'autorisation d'une augmentation de loyer supérieure à la ligne directrice annuelle."
+      en: "The official application used to request approval for a rent increase above the annual guideline.",
+      fr: "Demande officielle utilisée pour solliciter l’autorisation d’une augmentation de loyer au-delà de la ligne directrice annuelle."
     }
   },
   {
     term: { en: "Form N1 (Notice of Rent Increase)", fr: "Formulaire N1 (avis d’augmentation de loyer)" },
     definition: {
-      en: "The standard form used for guideline rent increases. It must be served at least 90 days in advance.",
-      fr: "Formulaire standard utilisé pour les augmentations de loyer conformes à la ligne directrice. Il doit être remis au moins 90 jours à l'avance."
+      en: "A standard notice used for guideline-compliant rent increases, typically served at least 90 days in advance.",
+      fr: "Avis standard utilisé pour les augmentations conformes à la ligne directrice, généralement remis au moins 90 jours à l’avance."
     }
   },
   {
     term: { en: "Form N4 (Notice for Non-Payment)", fr: "Formulaire N4 (avis de non-paiement)" },
     definition: {
-      en: "A notice issued when rent has not been paid. Tenants generally have 14 days to pay the arrears and void the notice.",
-      fr: "Avis émis lorsque le loyer n’a pas été payé. Le locataire dispose généralement de 14 jours pour payer les arriérés et annuler l’avis."
+      en: "A notice issued when rent has not been paid, usually allowing time for the balance to be paid before further steps.",
+      fr: "Avis émis lorsque le loyer n’a pas été payé, laissant généralement un délai pour régulariser la situation."
     }
   },
   {
     term: { en: "Form N12 (Personal Use)", fr: "Formulaire N12 (usage personnel)" },
     definition: {
-      en: "A notice stating that the landlord or an immediate family member intends to occupy the rental unit.",
-      fr: "Avis indiquant que le propriétaire ou un membre de sa famille immédiate a l'intention d'occuper le logement."
+      en: "A notice indicating that the rental unit is intended to be occupied by the owner or an immediate family member.",
+      fr: "Avis indiquant que le logement est destiné à être occupé par le propriétaire ou un membre de sa famille immédiate."
     }
   },
   {
-    term: { en: "Form T2 (Tenant Rights Application)", fr: "Formulaire T2 (demande concernant les droits du locataire)" },
+    term: { en: "Form T2", fr: "Formulaire T2" },
     definition: {
-      en: "An application tenants may file if a landlord has harassed or interfered with reasonable enjoyment.",
-      fr: "Demande déposée par un locataire si le propriétaire a harcelé ou entravé la jouissance raisonnable."
+      en: "An application used when a tenant believes their reasonable enjoyment has been interfered with.",
+      fr: "Demande utilisée lorsqu’un locataire estime que sa jouissance raisonnable a été compromise."
     }
   },
   {
-    term: { en: "Form T6 (Maintenance Application)", fr: "Formulaire T6 (demande relative à l’entretien)" },
+    term: { en: "Form T6", fr: "Formulaire T6" },
     definition: {
-      en: "An application filed by tenants when a landlord fails to carry out required repairs or maintenance.",
-      fr: "Demande déposée par un locataire lorsque le propriétaire ne respecte pas ses obligations d’entretien."
+      en: "An application related to maintenance concerns when required repairs are not addressed.",
+      fr: "Demande relative aux enjeux d’entretien lorsque les réparations requises ne sont pas effectuées."
     }
   },
   {
     term: { en: "LTB (Landlord and Tenant Board)", fr: "CLI (Commission de la location immobilière)" },
     definition: {
-      en: "The independent administrative tribunal that resolves residential tenancy disputes in Ontario.",
-      fr: "Tribunal administratif indépendant chargé de régler les différends entre propriétaires et locataires en Ontario."
+      en: "The administrative tribunal responsible for resolving residential tenancy matters in Ontario.",
+      fr: "Tribunal administratif chargé de trancher les questions liées à la location résidentielle en Ontario."
     }
   },
   {
     term: { en: "RTA (Residential Tenancies Act)", fr: "Loi sur la location à usage d’habitation" },
     definition: {
-      en: "Ontario legislation governing the rights and responsibilities of landlords and tenants.",
-      fr: "Loi de l’Ontario encadrant les droits et obligations des propriétaires et des locataires."
+      en: "Ontario legislation that sets out the framework governing residential tenancies.",
+      fr: "Loi de l’Ontario établissant le cadre régissant les locations résidentielles."
     }
   }
 ];
@@ -197,13 +197,13 @@ export default function Glossary() {
       >
         <strong>
           {lang === "fr"
-            ? "Définitions informatives — pas un avis juridique"
-            : "Informational definitions — not legal advice"}
+            ? "Référence informative — à des fins éducatives"
+            : "Informational reference — for educational purposes"}
         </strong>
         <p style={{ marginTop: "6px" }}>
           {lang === "fr"
-            ? "Ce glossaire fournit des définitions générales de termes liés au droit locatif en Ontario. Il ne remplace pas les textes de loi officiels ni un avis juridique."
-            : "This glossary provides general definitions of Ontario tenant-law terms. It does not replace official legislation or legal advice."}
+            ? "Ce glossaire présente des définitions générales de termes utilisés en location résidentielle en Ontario. Il est fourni à titre informatif."
+            : "This glossary presents general definitions of terms used in Ontario residential tenancies. It is provided for informational purposes."}
         </p>
       </div>
 
