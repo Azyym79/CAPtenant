@@ -12,46 +12,58 @@ export default function Home() {
   const content = {
     en: {
       title: "Welcome to CAPtenant",
-      desc: "CAPtenant guides tenants through Ontario’s rental rules and rights, helping them act early and avoid unnecessary conflicts.",
+      desc: "CAPtenant helps tenants understand Ontario’s rental rules and rights, supporting early communication and informed decisions.",
       tagline: "Helping tenants find their way — before disputes escalate.",
       agiTitle: "AGI Explained",
-      agiDesc: "Understand Above Guideline Rent Increases and what to do when your landlord demands too much.",
+      agiDesc: "Learn about Above Guideline Rent Increases and common options tenants may consider.",
       letterTitle: "Generate Letters",
-      letterDesc: "Easily create formal letters for AGI disputes, repair requests, payment plans, and more.",
-      rightsTitle: "Your Rights",
-      rightsDesc: "Learn your core legal protections as a tenant — simplified and easy to understand.",
-      // 🌍 MULTILINGUAL SCOPE: Only on Voice Assistant
+      letterDesc: "Draft structured letters for AGI concerns, repair requests, payment plans, and more.",
+      rightsTitle: "Tenant Rights (Info)",
+      rightsDesc: "Learn about common tenant protections under Ontario law — simplified and easy to understand.",
       voiceTitle: "Voice Assistant",
-      voiceDesc: "Ask questions or fill forms hands-free — supports English, French, Spanish, Arabic, and Urdu.",
+      voiceDesc:
+        "Describe your situation or fill in information hands-free. Supports multiple languages for convenience.",
+      voiceNote:
+        "All legal information and letters are generated in English or French.",
       glossaryTitle: "Glossary",
-      glossaryDesc: "Explore key terms like AGI, N12, eviction orders, and more — all simplified.",
-      switchBtn: "Français"
+      glossaryDesc:
+        "Explore commonly used rental terms like AGI, N12, eviction orders, and more — simplified.",
+      switchBtn: "Français",
+      legalDisclaimer:
+        "CAPtenant provides general information only and does not offer legal advice."
     },
     fr: {
       title: "Bienvenue sur CAPtenant",
-      desc: "CAPtenant aide les locataires à comprendre les règles et droits locatifs en Ontario afin d’agir tôt et d’éviter des conflits inutiles.",
+      desc: "CAPtenant aide les locataires à comprendre les règles et droits locatifs en Ontario, favorisant une communication précoce et des décisions éclairées.",
       tagline: "Aider les locataires à trouver leur voie — avant que les différends ne s’aggravent.",
       agiTitle: "AGI expliqué",
-      agiDesc: "Comprenez les augmentations de loyer au-delà de la ligne directrice et les mesures à prendre.",
+      agiDesc:
+        "Découvrez les augmentations de loyer au-delà de la ligne directrice et les options couramment envisagées.",
       letterTitle: "Générer des lettres",
-      letterDesc: "Créez facilement des lettres officielles pour les litiges AGI, réparations, plans de paiement et plus.",
-      rightsTitle: "Vos droits",
-      rightsDesc: "Découvrez vos protections juridiques essentielles en tant que locataire — simplifiées.",
-      // 🌍 MULTILINGUAL SCOPE: Only on Voice Assistant
+      letterDesc:
+        "Rédigez des brouillons de lettres structurées pour les enjeux AGI, réparations, plans de paiement et plus.",
+      rightsTitle: "Droits des locataires (Info)",
+      rightsDesc:
+        "Découvrez les protections locatives courantes prévues par la loi ontarienne — expliquées simplement.",
       voiceTitle: "Assistant vocal",
-      voiceDesc: "Posez des questions ou remplissez des formulaires — supporte l'anglais, le français, l'espagnol, l'arabe et l'ourdou.",
+      voiceDesc:
+        "Décrivez votre situation ou saisissez des informations mains libres. Prend en charge plusieurs langues pour plus de commodité.",
+      voiceNote:
+        "Toutes les informations juridiques et lettres sont générées en anglais ou en français.",
       glossaryTitle: "Glossaire",
-      glossaryDesc: "Explorez des termes clés comme AGI, N12, avis d’expulsion et plus — expliqués simplement.",
-      switchBtn: "English"
+      glossaryDesc:
+        "Explorez des termes locatifs courants comme AGI, N12, avis d’expulsion et plus — simplifiés.",
+      switchBtn: "English",
+      legalDisclaimer:
+        "CAPtenant fournit des informations générales uniquement et ne constitue pas un avis juridique."
     }
   };
 
   const t = content[lang];
 
-  // Helper to persist the bilingual choice in the URL for all sub-pages
+  // Persist bilingual choice
   const withLang = (path) => (lang === "fr" ? `${path}?lang=fr` : path);
 
-  // Toggle function for the strict EN/FR switcher
   const toggleLanguage = () => {
     const newLang = lang === "en" ? "fr" : "en";
     params.set("lang", newLang);
@@ -70,10 +82,16 @@ export default function Home() {
         fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
       }}
     >
-
       {/* --- HEADER --- */}
       <header style={{ marginBottom: "2rem" }}>
-        <h1 style={{ fontSize: "2rem", marginBottom: "0.5rem", color: "#333", fontWeight: "800" }}>
+        <h1
+          style={{
+            fontSize: "2rem",
+            marginBottom: "0.5rem",
+            color: "#333",
+            fontWeight: "800"
+          }}
+        >
           {t.title}
         </h1>
 
@@ -86,13 +104,38 @@ export default function Home() {
             fontSize: "1.15rem"
           }}
         >
-        {t.desc}
+          {t.desc}
         </p>
 
-        <div style={{ width: "40px", height: "3px", background: "#0d6efd", marginBottom: "0.5rem" }} />
+        <div
+          style={{
+            width: "40px",
+            height: "3px",
+            background: "#0d6efd",
+            marginBottom: "0.5rem"
+          }}
+        />
 
-        <p style={{ fontStyle: "italic", color: "#666", marginBottom: "2rem", fontSize: "1rem" }}>
+        <p
+          style={{
+            fontStyle: "italic",
+            color: "#666",
+            marginBottom: "1.5rem",
+            fontSize: "1rem"
+          }}
+        >
           {t.tagline}
+        </p>
+
+        {/* --- GLOBAL LEGAL DISCLAIMER --- */}
+        <p
+          style={{
+            fontSize: "0.85rem",
+            color: "#777",
+            maxWidth: "750px"
+          }}
+        >
+          {t.legalDisclaimer}
         </p>
       </header>
 
@@ -122,6 +165,15 @@ export default function Home() {
         <Link to={withLang("/voice")} style={cardStyle}>
           <h3 style={cardTitleStyle}>{t.voiceTitle}</h3>
           <p style={cardDescStyle}>{t.voiceDesc}</p>
+          <p
+            style={{
+              marginTop: "0.5rem",
+              fontSize: "0.8rem",
+              color: "#777"
+            }}
+          >
+            {t.voiceNote}
+          </p>
         </Link>
 
         <Link to={withLang("/glossary")} style={cardStyle}>
