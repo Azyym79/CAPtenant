@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 /* ======================================================
    MASTER RIGHTS FAQ DATABASE (EN-CA / FR-CA)
+   NOTE: Informational content only — non-exhaustive
 ====================================================== */
 const FAQ = [
   {
@@ -13,8 +14,8 @@ const FAQ = [
       fr: "Quelle est la limite légale d’augmentation de loyer en Ontario?"
     },
     answer: {
-      en: "Most rental units are subject to Ontario’s annual rent increase guideline. A landlord cannot increase rent above the guideline without approval for an Above-Guideline Increase (AGI).",
-      fr: "La plupart des logements sont assujettis à la ligne directrice annuelle d’augmentation de loyer en Ontario. Un propriétaire ne peut dépasser cette limite sans l’approbation d’une augmentation au-delà de la ligne directrice (AGI)."
+      en: "Most rental units are subject to Ontario’s annual rent increase guideline. A landlord generally cannot increase rent above the guideline without approval for an Above-Guideline Increase (AGI).",
+      fr: "La plupart des logements sont assujettis à la ligne directrice annuelle d’augmentation de loyer en Ontario. En général, un propriétaire ne peut dépasser cette limite sans l’approbation d’une augmentation au-delà de la ligne directrice (AGI)."
     },
     severity: "moderate",
     urgency: "normal",
@@ -28,8 +29,8 @@ const FAQ = [
       fr: "Qu’est-ce qu’une augmentation au-delà de la ligne directrice (AGI)?"
     },
     answer: {
-      en: "An Above-Guideline Increase (AGI) allows a landlord to raise rent above the guideline due to major repairs or increased property taxes. Tenants have the right to object.",
-      fr: "Une augmentation au-delà de la ligne directrice (AGI) permet au propriétaire d’augmenter le loyer au-delà de la limite en raison de réparations majeures ou de hausses d’impôts fonciers. Les locataires ont le droit de s’y opposer."
+      en: "An Above-Guideline Increase (AGI) may allow a landlord to raise rent above the guideline due to certain costs such as major repairs or property tax increases. Tenants generally have the right to object.",
+      fr: "Une augmentation au-delà de la ligne directrice (AGI) peut permettre au propriétaire d’augmenter le loyer au-delà de la limite en raison de certains coûts, comme des réparations majeures ou des hausses d’impôts fonciers. Les locataires ont généralement le droit de s’y opposer."
     },
     severity: "high",
     urgency: "normal",
@@ -43,8 +44,8 @@ const FAQ = [
       fr: "Mon propriétaire refuse de faire des réparations. Quels sont mes droits?"
     },
     answer: {
-      en: "Landlords must keep rental units in good repair and fit for habitation. If repairs are ignored, a tenant may file a T6 application with the Landlord and Tenant Board.",
-      fr: "Le propriétaire doit maintenir le logement en bon état et propre à l’habitation. Si les réparations sont ignorées, le locataire peut déposer une demande T6 auprès de la Commission de la location immobilière."
+      en: "Landlords are generally required to maintain rental units in a good state of repair and fit for habitation. If issues are not addressed, a tenant may be able to apply to the Landlord and Tenant Board (for example, using a T6 application).",
+      fr: "Le propriétaire est généralement tenu de maintenir le logement en bon état et propre à l’habitation. Si les problèmes ne sont pas réglés, le locataire peut, dans certains cas, déposer une demande auprès de la Commission de la location immobilière (par exemple, une demande T6)."
     },
     severity: "high",
     urgency: "urgent",
@@ -58,8 +59,8 @@ const FAQ = [
       fr: "Un propriétaire peut-il m’expulser sans préavis?"
     },
     answer: {
-      en: "No. Only the Landlord and Tenant Board can order an eviction. Notices such as N4, N12, or N13 do not require you to leave immediately.",
-      fr: "Non. Seule la Commission de la location immobilière peut ordonner une expulsion. Les avis comme le N4, N12 ou N13 n’exigent pas un départ immédiat."
+      en: "In Ontario, only the Landlord and Tenant Board can issue an eviction order. Notices such as N4, N12, or N13 do not usually require a tenant to leave immediately.",
+      fr: "En Ontario, seule la Commission de la location immobilière peut ordonner une expulsion. Les avis comme le N4, N12 ou N13 n’exigent généralement pas un départ immédiat."
     },
     severity: "high",
     urgency: "urgent",
@@ -73,8 +74,8 @@ const FAQ = [
       fr: "Le propriétaire peut-il entrer dans mon logement sans permission?"
     },
     answer: {
-      en: "Except in emergencies, landlords must provide at least 24 hours’ written notice stating the reason and time of entry.",
-      fr: "Sauf en cas d’urgence, le propriétaire doit fournir un avis écrit d’au moins 24 heures indiquant la raison et l’heure de l’entrée."
+      en: "Except in emergencies, landlords generally must provide at least 24 hours’ written notice stating the reason and time of entry.",
+      fr: "Sauf en cas d’urgence, le propriétaire doit généralement fournir un avis écrit d’au moins 24 heures indiquant la raison et l’heure de l’entrée."
     },
     severity: "moderate",
     urgency: "normal",
@@ -86,11 +87,10 @@ const categories = ["All", ...new Set(FAQ.map(f => f.category))];
 const allTags = ["All", ...new Set(FAQ.flatMap(f => f.tags))];
 
 /* ======================================================
-   SMART DETECTION (Updated for Multilingual Keywords)
+   SMART DETECTION (Multilingual Keywords — Input Only)
 ====================================================== */
 const detectToneFromIntent = (text) => {
   const t = text.toLowerCase();
-  // Detect English, French, Spanish, and Roman Urdu keywords
   if (t.includes("evict") || t.includes("nikalna") || t.includes("desalojo") || t.includes("harass")) return "firm";
   if (t.includes("repair") || t.includes("theek") || t.includes("reparar") || t.includes("broken")) return "polite";
   return "professional";
@@ -100,8 +100,8 @@ export default function RightsFAQ() {
   const navigate = useNavigate();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  
-  // 🇨🇦 Global Language Lock (UI is strictly EN or FR)
+
+  // 🇨🇦 UI language locked to EN / FR
   const lang = params.get("lang") === "fr" ? "fr" : "en";
 
   const [query, setQuery] = useState("");
@@ -114,7 +114,7 @@ export default function RightsFAQ() {
   const [aiAnswer, setAiAnswer] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
 
-  /* ---------------- FILTER SYSTEM ---------------- */
+  /* ---------------- FILTER SYSTEM (NO LOSS) ---------------- */
   const filtered = useMemo(() => {
     return FAQ.filter(item => {
       const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
@@ -133,7 +133,7 @@ export default function RightsFAQ() {
     });
   }, [query, selectedCategory, severityFilter, urgencyFilter, tagFilter]);
 
-  /* ---------------- AI ASSIST (Multilingual Support) ---------------- */
+  /* ---------------- AI ASSIST (INFORMATIONAL ONLY) ---------------- */
   const askAI = async () => {
     if (!aiInput.trim()) return;
     setAiLoading(true);
@@ -143,9 +143,9 @@ export default function RightsFAQ() {
       const res = await fetch("/ask-ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          text: aiInput, 
-          language: params.get("lang") || "en" // Passes original language (Urdu/Spanish/Arabic) to AI
+        body: JSON.stringify({
+          text: aiInput,
+          language: params.get("lang") || "en"
         })
       });
 
@@ -153,7 +153,9 @@ export default function RightsFAQ() {
       setAiAnswer(data.answer);
     } catch {
       setAiAnswer(
-        lang === "fr" ? "Impossible de joindre l’assistant CAPtenant." : "Unable to reach CAPtenant AI."
+        lang === "fr"
+          ? "Impossible de joindre l’assistant CAPtenant pour le moment."
+          : "Unable to reach CAPtenant AI at the moment."
       );
     } finally {
       setAiLoading(false);
@@ -163,13 +165,45 @@ export default function RightsFAQ() {
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto", fontFamily: "sans-serif" }}>
       <h1 style={{ color: "#333", borderBottom: "2px solid #4d97ff", paddingBottom: "10px" }}>
-        {lang === "fr" ? "FAQ – Droits des locataires" : "Tenant Rights FAQ"}
+        {lang === "fr" ? "FAQ – Droits des locataires (Ontario)" : "Tenant Rights FAQ (Ontario)"}
       </h1>
+
+      {/* GLOBAL DISCLAIMER (NEW) */}
+      <div
+        style={{
+          marginTop: "1rem",
+          marginBottom: "1.5rem",
+          background: "#f8f9fa",
+          border: "1px solid #e9ecef",
+          borderLeft: "6px solid #ffc107",
+          borderRadius: "10px",
+          padding: "14px 16px",
+          color: "#444",
+          lineHeight: "1.5",
+          fontSize: "0.95rem"
+        }}
+      >
+        <strong>
+          {lang === "fr"
+            ? "Information générale — pas un avis juridique"
+            : "General information — not legal advice"}
+        </strong>
+        <p style={{ marginTop: "6px" }}>
+          {lang === "fr"
+            ? "Cette FAQ fournit des informations générales sur le droit locatif en Ontario. Elle n’est pas exhaustive et les règles peuvent changer. Pour une situation précise, consultez les sources officielles ou un professionnel autorisé."
+            : "This FAQ provides general information about Ontario tenant law. It is not exhaustive and laws may change. For your specific situation, consult official sources or a licensed professional."}
+        </p>
+        <p style={{ marginTop: "6px", color: "#666" }}>
+          {lang === "fr"
+            ? "Le contenu juridique faisant autorité dans CAPtenant est fourni en anglais et en français."
+            : "Authoritative legal content in CAPtenant is provided in English and French."}
+        </p>
+      </div>
 
       <p style={{ color: "#666", marginBottom: "1.5rem" }}>
         {lang === "fr"
-          ? "Recherchez, filtrez ou posez une question à CAPtenant concernant vos droits en Ontario."
-          : "Search, filter, or ask CAPtenant about your tenant rights in Ontario."}
+          ? "Recherchez, filtrez ou consultez des informations générales sur vos droits de locataire en Ontario."
+          : "Search, filter, or review general information about your tenant rights in Ontario."}
       </p>
 
       {/* SEARCH */}
@@ -203,17 +237,37 @@ export default function RightsFAQ() {
 
       {/* AI BOX */}
       <div style={{ background: "#eef4ff", padding: "20px", borderRadius: "12px", marginBottom: "2rem", border: "1px solid #c6d8ff" }}>
-        <h3 style={{ marginTop: 0 }}>{lang === "fr" ? "Assistant IA Multilingue" : "Multilingual AI Assistant"}</h3>
+        <h3 style={{ marginTop: 0 }}>
+          {lang === "fr" ? "Assistant IA (informatif seulement)" : "AI Assistant (informational only)"}
+        </h3>
+        <p style={{ fontSize: "0.9rem", color: "#555" }}>
+          {lang === "fr"
+            ? "Les réponses de l’IA sont fournies à titre informatif seulement et ne constituent pas un avis juridique."
+            : "AI responses are provided for general information only and do not constitute legal advice."}
+        </p>
         <textarea
           value={aiInput}
           onChange={e => setAiInput(e.target.value)}
-          placeholder={lang === "fr" ? "Posez votre question (Français, Espagnol, Arabe, Ourdou)..." : "Ask your question (English, Spanish, Arabic, Urdu)..."}
+          placeholder={
+            lang === "fr"
+              ? "Posez votre question (français, espagnol, arabe, ourdou)…"
+              : "Ask your question (English, Spanish, Arabic, Urdu)…"
+          }
           style={{ width: "100%", height: "80px", padding: "10px", borderRadius: "8px", border: "1px solid #ccc" }}
         />
-        <button 
-          onClick={askAI} 
-          disabled={aiLoading} 
-          style={{ marginTop: "10px", padding: "10px 20px", background: "#4d97ff", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" }}
+        <button
+          onClick={askAI}
+          disabled={aiLoading}
+          style={{
+            marginTop: "10px",
+            padding: "10px 20px",
+            background: "#4d97ff",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "bold"
+          }}
         >
           {aiLoading ? "..." : (lang === "fr" ? "Envoyer" : "Ask AI")}
         </button>
@@ -226,15 +280,33 @@ export default function RightsFAQ() {
 
       {/* FAQ RESULTS */}
       {filtered.map(item => (
-        <details key={item.id} style={{ marginBottom: "15px", background: "white", padding: "15px", borderRadius: "10px", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", border: "1px solid #eee" }}>
+        <details
+          key={item.id}
+          style={{
+            marginBottom: "15px",
+            background: "white",
+            padding: "15px",
+            borderRadius: "10px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+            border: "1px solid #eee"
+          }}
+        >
           <summary style={{ fontWeight: "bold", cursor: "pointer", fontSize: "1.1rem" }}>
             {item.question[lang]}
           </summary>
           <div style={{ marginTop: "10px", paddingLeft: "10px", borderLeft: "4px solid #dce7ff" }}>
             <p style={{ lineHeight: "1.6" }}>{item.answer[lang]}</p>
-            <button 
+            <button
               onClick={() => navigate(`/letters?from=faq&lang=${lang}`)}
-              style={{ padding: "8px 16px", background: "#28a745", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", marginTop: "10px" }}
+              style={{
+                padding: "8px 16px",
+                background: "#28a745",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer",
+                marginTop: "10px"
+              }}
             >
               {lang === "fr" ? "Générer une lettre" : "Generate Letter"}
             </button>
