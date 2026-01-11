@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 
 /* ======================================================
    MASTER GLOSSARY (EN-CA / FR-CA)
-   Enriched with LTB and RTA specialized terminology
+   Educational definitions — not legal advice
 ====================================================== */
 const TERMS = [
   {
@@ -65,8 +65,8 @@ const TERMS = [
   {
     term: { en: "Form L5 (AGI Application)", fr: "Formulaire L5 (demande d’augmentation au-delà de la ligne directrice)" },
     definition: {
-      en: "The official Landlord and Tenant Board application a landlord must file to request a rent increase above the annual guideline, based on eligible capital expenditures, new or enhanced security services, or extraordinary municipal tax increases. The landlord must provide detailed financial evidence and serve notice to affected tenants.",
-      fr: "Demande officielle déposée par le propriétaire auprès de la Commission de la location immobilière (CLI) afin d'obtenir l'autorisation d'une augmentation de loyer supérieure à la ligne directrice annuelle. Elle doit être justifiée par des dépenses en immobilisations admissibles, de nouveaux services de sécurité ou des hausses exceptionnelles d'impôts municipaux, avec preuves financières détaillées et avis aux locataires concernés."
+      en: "The official Landlord and Tenant Board application a landlord must file to request a rent increase above the annual guideline.",
+      fr: "Demande officielle déposée par le propriétaire auprès de la Commission de la location immobilière (CLI) afin d'obtenir l'autorisation d'une augmentation de loyer supérieure à la ligne directrice annuelle."
     }
   },
   {
@@ -93,15 +93,15 @@ const TERMS = [
   {
     term: { en: "Form T2 (Tenant Rights Application)", fr: "Formulaire T2 (demande concernant les droits du locataire)" },
     definition: {
-      en: "An application tenants may file if a landlord has harassed, coerced, interfered with reasonable enjoyment, or entered the unit illegally.",
-      fr: "Demande déposée par un locataire si le propriétaire a harcelé, contraint, entravé la jouissance raisonnable ou est entré illégalement dans le logement."
+      en: "An application tenants may file if a landlord has harassed or interfered with reasonable enjoyment.",
+      fr: "Demande déposée par un locataire si le propriétaire a harcelé ou entravé la jouissance raisonnable."
     }
   },
   {
     term: { en: "Form T6 (Maintenance Application)", fr: "Formulaire T6 (demande relative à l’entretien)" },
     definition: {
       en: "An application filed by tenants when a landlord fails to carry out required repairs or maintenance.",
-      fr: "Demande déposée par un locataire lorsque le propriétaire ne respecte pas ses obligations d’entretien ou de réparation."
+      fr: "Demande déposée par un locataire lorsque le propriétaire ne respecte pas ses obligations d’entretien."
     }
   },
   {
@@ -112,45 +112,10 @@ const TERMS = [
     }
   },
   {
-    term: { en: "Mediation", fr: "Médiation" },
-    definition: {
-      en: "A voluntary process in which a Dispute Resolution Officer helps the parties attempt to reach an agreement without a formal hearing.",
-      fr: "Processus volontaire par lequel un agent de règlement des différends aide les parties à parvenir à une entente sans audience formelle."
-    }
-  },
-  {
-    term: { en: "Order", fr: "Ordonnance" },
-    definition: {
-      en: "The final written and legally binding decision issued by the LTB.",
-      fr: "Décision écrite finale et juridiquement contraignante rendue par la CLI."
-    }
-  },
-  {
     term: { en: "RTA (Residential Tenancies Act)", fr: "Loi sur la location à usage d’habitation" },
     definition: {
-      en: "Ontario legislation that governs the rights and responsibilities of landlords and tenants.",
-      fr: "Loi de l’Ontario qui encadre les droits et obligations des propriétaires et des locataires."
-    }
-  },
-  {
-    term: { en: "Security of Tenure", fr: "Sécurité d’occupation" },
-    definition: {
-      en: "The right of a tenant to remain in their rental unit unless they choose to leave or the LTB issues an eviction order.",
-      fr: "Droit du locataire de demeurer dans son logement sauf s’il choisit de partir ou si la CLI rend une ordonnance d’expulsion."
-    }
-  },
-  {
-    term: { en: "Sheriff (Court Enforcement Office)", fr: "Shérif (bureau d’exécution judiciaire)" },
-    definition: {
-      en: "The only authority legally permitted to carry out a physical eviction. Landlords may not change locks themselves.",
-      fr: "Seule autorité légalement habilitée à procéder à une expulsion physique. Le propriétaire ne peut pas changer les serrures lui-même."
-    }
-  },
-  {
-    term: { en: "Standard Lease", fr: "Bail standard" },
-    definition: {
-      en: "The mandatory lease template that most Ontario landlords must use for written tenancy agreements.",
-      fr: "Modèle de bail obligatoire que la plupart des propriétaires de l’Ontario doivent utiliser pour les conventions de location écrites."
+      en: "Ontario legislation governing the rights and responsibilities of landlords and tenants.",
+      fr: "Loi de l’Ontario encadrant les droits et obligations des propriétaires et des locataires."
     }
   }
 ];
@@ -216,11 +181,31 @@ export default function Glossary() {
         📘 {lang === "fr" ? "Glossaire CAPtenant" : "CAPtenant Glossary"}
       </h1>
 
-      <p style={{ textAlign: "center", color: "#666" }}>
-        {lang === "fr"
-          ? "Définitions claires des termes juridiques liés aux droits des locataires en Ontario."
-          : "Clear definitions of key tenant-rights terms and LTB forms in Ontario."}
-      </p>
+      {/* DISCLAIMER */}
+      <div
+        style={{
+          margin: "1rem auto 1.5rem",
+          background: "#f8f9fa",
+          border: "1px solid #e9ecef",
+          borderLeft: "6px solid #ffc107",
+          borderRadius: "10px",
+          padding: "14px 16px",
+          color: "#444",
+          lineHeight: "1.5",
+          fontSize: "0.95rem"
+        }}
+      >
+        <strong>
+          {lang === "fr"
+            ? "Définitions informatives — pas un avis juridique"
+            : "Informational definitions — not legal advice"}
+        </strong>
+        <p style={{ marginTop: "6px" }}>
+          {lang === "fr"
+            ? "Ce glossaire fournit des définitions générales de termes liés au droit locatif en Ontario. Il ne remplace pas les textes de loi officiels ni un avis juridique."
+            : "This glossary provides general definitions of Ontario tenant-law terms. It does not replace official legislation or legal advice."}
+        </p>
+      </div>
 
       <input
         type="text"
