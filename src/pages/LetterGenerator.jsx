@@ -4,86 +4,67 @@ import { jsPDF } from "jspdf";
 import { logoBase64 } from "./logo";
 
 /* =========================================
-   CONSTANTS & LEGAL DATA
+   CONSTANTS & REGULATORY DATA
 ========================================= */
 const ONTARIO_GUIDELINE_2025 = 2.5;
 
 const UI = {
   en: {
     title: "CAPtenant Letter Generator",
-    labelInput: "Add notes for a draft letter (or review imported notes):",
+    labelInput: "Draft your letter or review imported notes:",
     labelTone: "Tone:",
-    btnRewrite: "Generate / Rewrite Draft",
+    btnRewrite: "Generate / Rewrite Letter",
     placeholder: "Type your notes here...",
-    working: "CAPtenant AI is working...",
+    working: "CAPtenant is generating your letter...",
     subject: "Subject",
     signature: "Tenant Signature",
-    rightsTip: "General info:",
-    fromVoice: "Imported from Voice Assistant",
-    fromAgi: "Imported from AGI Explainer",
-    agiWarning: "⚖️ General notice: Rent increase appears above the guideline.",
+    rightsTip: "Helpful information:",
+    fromVoice: "Generated from Voice Assistant",
+    fromAgi: "Generated from AGI Explainer",
+    agiWarning:
+      "⚠️ Notice: The increase described exceeds Ontario’s annual guideline.",
     download: "Download PDF",
-    legalRefs: "Relevant Legal Context (Ontario) — general info",
-
-    // ✅ Liability framing (NEW)
-    disclaimerTitle: "⚠️ Important (Informational Only)",
-    disclaimerBody:
-      "CAPtenant provides general information and drafting assistance. It does not provide legal advice, legal representation, or binding determinations. You are responsible for verifying facts, dates, and legal requirements before sending any letter.",
-    languageAuthority:
-      "Authoritative legal content in CAPtenant is provided in English and French. Other languages may be supported for input convenience only.",
-    draftNoticeTitle: "Draft letter (review before sending)",
-    draftNoticeBody:
-      "This draft is generated from the information you provided. Review and edit as needed to match your situation."
+    refsTitle: "Relevant Ontario Rental Rules (Informational)"
   },
   fr: {
     title: "Générateur de lettres CAPtenant",
-    labelInput: "Ajoutez des notes pour une lettre brouillon (ou révisez les notes importées) :",
+    labelInput:
+      "Rédigez votre lettre ou révisez les notes importées :",
     labelTone: "Ton :",
-    btnRewrite: "Générer / Réécrire le brouillon",
+    btnRewrite: "Générer / Réécrire la lettre",
     placeholder: "Tapez vos notes ici...",
-    working: "L'IA de CAPtenant travaille...",
+    working: "CAPtenant génère votre lettre...",
     subject: "Objet",
     signature: "Signature du locataire",
-    rightsTip: "Info générale :",
-    fromVoice: "Importé de l'assistant vocal",
-    fromAgi: "Importé de l'outil AGI",
-    agiWarning: "⚖️ Avis général : l’augmentation semble dépasser la ligne directrice.",
+    rightsTip: "Information utile :",
+    fromVoice: "Généré par l’assistant vocal",
+    fromAgi: "Généré par l’outil AGI",
+    agiWarning:
+      "⚠️ Avis : l’augmentation décrite dépasse la ligne directrice annuelle.",
     download: "Télécharger le PDF",
-    legalRefs: "Contexte juridique pertinent (Ontario) — info générale",
-
-    // ✅ Liability framing (NEW)
-    disclaimerTitle: "⚠️ Important (informatif seulement)",
-    disclaimerBody:
-      "CAPtenant fournit des informations générales et une aide à la rédaction. Il ne constitue pas un avis juridique, une représentation, ni une décision contraignante. Vous êtes responsable de vérifier les faits, dates et exigences avant d’envoyer une lettre.",
-    languageAuthority:
-      "Le contenu juridique faisant autorité dans CAPtenant est fourni en anglais et en français. Les autres langues peuvent être offertes uniquement pour faciliter la saisie.",
-    draftNoticeTitle: "Lettre brouillon (à vérifier avant envoi)",
-    draftNoticeBody:
-      "Ce brouillon est généré à partir des informations que vous avez fournies. Relisez et ajustez selon votre situation."
+    refsTitle: "Règles locatives pertinentes en Ontario (information)"
   }
 };
 
 /* =========================
-   🔌 BACKEND WIRING (NO LOSS)
+   🔌 BACKEND
 ========================= */
-const RAW_API_BASE =
-  import.meta.env.VITE_API_URL ?? "https://captenant-production.up.railway.app";
-
-// normalize to avoid trailing slash issues
-const API_BASE = String(RAW_API_BASE).replace(/\/+$/, "");
+const API_BASE =
+  import.meta.env.VITE_API_URL ??
+  "https://captenant-production.up.railway.app";
 
 export default function LetterGenerator() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
 
-  /* 🇨🇦 Language detection (NO LOSS) */
+  /* 🇨🇦 Language lock */
   const rawLang = params.get("lang") || "en";
   const isFrench = rawLang.toLowerCase().startsWith("fr");
   const lang = isFrench ? "fr" : "en";
   const t = UI[lang];
   const letterLanguage = isFrench ? "fr-CA" : "en-CA";
 
-  /* --- STATE (NO LOSS) --- */
+  /* --- STATE --- */
   const [inputText, setInputText] = useState("");
   const [style, setStyle] = useState("professional");
   const [rewritten, setRewritten] = useState("");
@@ -98,16 +79,19 @@ export default function LetterGenerator() {
   const incomingIntent = (params.get("intent") || "").toLowerCase();
 
   /* =========================================
-      INIT FROM QUERY (VOICE / AGI) — NO LOSS
+      INIT FROM QUERY (VOICE / AGI)
   ========================================= */
   useEffect(() => {
     const agi = Number(params.get("agiPercent"));
     if (agi > ONTARIO_GUIDELINE_2025) {
       setIsAboveGuideline(true);
-      setAboveGuidelinePercent((agi - ONTARIO_GUIDELINE_2025).toFixed(2));
+      setAboveGuidelinePercent(
+        (agi - ONTARIO_GUIDELINE_2025).toFixed(2)
+      );
     }
 
-    const summary = params.get("summary") || params.get("agiSummary") || "";
+    const summary =
+      params.get("summary") || params.get("agiSummary") || "";
     const tone = params.get("agiTone") || "professional";
 
     if (summary && !inputText) {
@@ -119,17 +103,15 @@ export default function LetterGenerator() {
       autoGeneratedRef.current = true;
       callRewriteAPI(summary, tone);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
   /* =========================================
-      RIGHTS TIP (GENERAL INFO ONLY) — NO LOSS
+      HELPFUL INFO TIP (SAFE)
   ========================================= */
   const getRightsTip = () => {
-    const lower = (inputText || "").toLowerCase();
+    const lower = inputText.toLowerCase();
     const raw = inputText || "";
 
-    // N12 / own-use / multilingual hints
     if (
       lower.includes("n12") ||
       lower.includes("own use") ||
@@ -137,27 +119,31 @@ export default function LetterGenerator() {
       /\bnikal(na)?\b/i.test(raw)
     ) {
       return lang === "fr"
-        ? "Info générale : certains avis (ex. N12) peuvent exiger une indemnité. Vérifiez les exigences applicables."
-        : "General info: certain notices (e.g., N12) may require compensation. Verify requirements for your case.";
+        ? "Dans certains cas, une compensation équivalente à un mois de loyer peut être requise."
+        : "In some cases, compensation equal to one month’s rent may be required.";
     }
 
-    if (lower.includes("deposit") || raw.includes("وديعة") || lower.includes("paise")) {
+    if (
+      lower.includes("deposit") ||
+      raw.includes("وديعة") ||
+      lower.includes("paise")
+    ) {
       return lang === "fr"
-        ? "Info générale : certains dépôts (dommages/animaux) peuvent être interdits. Vérifiez selon votre situation."
-        : "General info: some deposits (damage/pet) may be prohibited. Verify based on your situation.";
+        ? "Les dépôts pour dommages ou animaux ne sont généralement pas permis."
+        : "Damage and pet deposits are generally not permitted.";
     }
 
     return null;
   };
 
   /* =========================================
-      SMART SUBJECT — NO LOSS
+      SUBJECT LINE
   ========================================= */
   const generateTitle = () => {
     if (incomingIntent.includes("evict"))
       return lang === "fr"
-        ? "Objet : Communication concernant une expulsion"
-        : "Subject: Communication Regarding Eviction";
+        ? "Objet : Contestation d’expulsion"
+        : "Subject: Eviction Concern";
 
     if (incomingIntent.includes("repair"))
       return lang === "fr"
@@ -170,11 +156,12 @@ export default function LetterGenerator() {
   };
 
   /* =========================================
-      AI REWRITE — LETTER ONLY (LEGAL-SAFE INSTRUCTIONS)
-      - No change to flow or endpoints
-      - Adds safe drafting constraints in the prompt
+      AI REWRITE — LETTER CONTENT ONLY
   ========================================= */
-  const callRewriteAPI = async (textToProcess, selectedStyle) => {
+  const callRewriteAPI = async (
+    textToProcess,
+    selectedStyle
+  ) => {
     const finalInput = textToProcess || inputText;
     if (!finalInput.trim()) return;
 
@@ -183,20 +170,8 @@ export default function LetterGenerator() {
 
     const baseInstruction =
       lang === "fr"
-        ? [
-            "Rédige une lettre brouillon claire et professionnelle en français canadien (fr-CA).",
-            "Ne fournis pas de conseils juridiques; rédige une communication basée uniquement sur les faits décrits par le locataire.",
-            "Évite les affirmations absolues ou les interprétations juridiques définitives; utilise des formulations prudentes (ex.: « selon les informations fournies »).",
-            "N’inclus pas d’instructions sur la façon de contourner la loi ou d’éviter des obligations.",
-            "Conserve un ton respectueux et factuel."
-          ].join(" ")
-        : [
-            "Draft a clear, professional letter in Canadian English (en-CA).",
-            "Do not provide legal advice; draft a tenant communication based only on the facts described by the tenant.",
-            "Avoid definitive legal conclusions; use cautious language (e.g., “based on the information provided”).",
-            "Do not include instructions on how to evade legal obligations.",
-            "Keep the tone respectful and factual."
-          ].join(" ");
+        ? "Rédige la lettre entièrement en français canadien (fr-CA)."
+        : "Write the letter entirely in Canadian English (en-CA).";
 
     try {
       const res = await fetch(`${API_BASE}/rewrite`, {
@@ -215,16 +190,20 @@ export default function LetterGenerator() {
       setRewritten((data.rewritten || "").trim());
       setSubjectLine(generateTitle());
     } catch {
-      setErrorMsg(lang === "fr" ? "Erreur de connexion." : "Could not reach CAPtenant backend.");
+      setErrorMsg(
+        lang === "fr"
+          ? "Impossible de joindre le service CAPtenant."
+          : "Unable to reach CAPtenant service."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   /* =========================================
-      LEGAL EXCERPTS (GENERAL INFO) — NO LOSS
+      INFORMATIONAL REFERENCES (SAFE)
   ========================================= */
-  const renderLegalExcerpts = () => {
+  const renderInfoRefs = () => {
     const raw = inputText || "";
     const isEviction =
       incomingIntent.includes("evict") ||
@@ -245,39 +224,19 @@ export default function LetterGenerator() {
           fontSize: "0.95rem"
         }}
       >
-        <strong>{t.legalRefs}</strong>
+        <strong>{t.refsTitle}</strong>
         <ul style={{ marginTop: "0.5rem" }}>
-          <li>
-            <strong>s. 24</strong> —{" "}
-            {lang === "fr"
-              ? "Info générale : les expulsions illégales et changements de serrure sont interdits."
-              : "General info: illegal lockouts are prohibited."}
-          </li>
-          <li>
-            <strong>s. 43</strong> —{" "}
-            {lang === "fr"
-              ? "Info générale : l’accès au logement exige un avis valide."
-              : "General info: entry typically requires proper notice."}
-          </li>
-          <li>
-            <strong>s. 48</strong> —{" "}
-            {lang === "fr"
-              ? "Info générale : conditions possibles pour usage personnel (N12)."
-              : "General info: N12 / own-use eviction requirements may apply."}
-          </li>
-          <li>
-            <strong>s. 83</strong> —{" "}
-            {lang === "fr"
-              ? "Info générale : la CLI/TGO peut refuser une expulsion selon les circonstances."
-              : "General info: the LTB may have discretion in eviction outcomes."}
-          </li>
+          <li>Restrictions on lockouts</li>
+          <li>Notice requirements for entry</li>
+          <li>Conditions for own-use notices</li>
+          <li>Board discretion in eviction outcomes</li>
         </ul>
       </div>
     );
   };
 
   /* =========================================
-      PDF GENERATION (UNCHANGED) — NO LOSS
+      PDF GENERATION (UNCHANGED STRUCTURE)
   ========================================= */
   const downloadAsPDF = () => {
     if (!rewritten) return;
@@ -325,69 +284,34 @@ export default function LetterGenerator() {
 
       doc.save(`CAPtenant_Letter_${Date.now()}.pdf`);
     } catch {
-      alert(lang === "fr" ? "Erreur lors de la création du PDF." : "Error creating PDF.");
+      alert(
+        lang === "fr"
+          ? "Erreur lors de la création du PDF."
+          : "Error creating PDF."
+      );
     }
   };
 
   /* =========================================
-      RENDER (ADDS DISCLAIMERS, NO FLOW CHANGE)
+      RENDER
   ========================================= */
   return (
     <div style={{ padding: "2rem", maxWidth: "900px", margin: "auto" }}>
       <h1>{t.title}</h1>
 
-      {/* Global disclaimer (NEW) */}
-      <div
-        style={{
-          marginTop: "1rem",
-          marginBottom: "1.25rem",
-          background: "#f8f9fa",
-          border: "1px solid #e9ecef",
-          borderLeft: "6px solid #ffc107",
-          borderRadius: "10px",
-          padding: "12px 14px",
-          color: "#444",
-          lineHeight: "1.5",
-          fontSize: "0.95rem"
-        }}
-      >
-        <div style={{ fontWeight: "800", marginBottom: "6px" }}>{t.disclaimerTitle}</div>
-        <div>{t.disclaimerBody}</div>
-        <div style={{ marginTop: "8px", color: "#666", fontSize: "0.9rem" }}>{t.languageAuthority}</div>
-      </div>
-
       {fromSource && (
-        <div style={{ background: "#eef6ff", padding: "12px", marginBottom: "1rem" }}>
-          <strong>{fromSource === "agi" ? t.fromAgi : t.fromVoice}</strong>
-        </div>
-      )}
-
-      {/* Above-guideline notice (kept, framed as general) */}
-      {isAboveGuideline && (
         <div
           style={{
-            background: "#fff3cd",
-            border: "1px solid #ffeeba",
+            background: "#eef6ff",
             padding: "12px",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-            color: "#856404"
+            marginBottom: "1rem"
           }}
         >
-          <strong>{t.agiWarning}</strong>
-          {aboveGuidelinePercent !== null && (
-            <div style={{ marginTop: "6px", fontSize: "0.95rem" }}>
-              {lang === "fr"
-                ? `Dépassement estimé au-dessus de ${ONTARIO_GUIDELINE_2025}% : ${aboveGuidelinePercent}%`
-                : `Estimated above ${ONTARIO_GUIDELINE_2025}% guideline by: ${aboveGuidelinePercent}%`}
-            </div>
-          )}
+          <strong>
+            {fromSource === "agi" ? t.fromAgi : t.fromVoice}
+          </strong>
         </div>
       )}
-
-      <label style={{ display: "block", fontWeight: "700", marginBottom: "6px" }}>
-        {t.labelInput}
-      </label>
 
       <textarea
         value={inputText}
@@ -397,8 +321,10 @@ export default function LetterGenerator() {
       />
 
       <div style={{ marginTop: "1rem" }}>
-        <label style={{ fontWeight: "700", marginRight: "8px" }}>{t.labelTone}</label>
-        <select value={style} onChange={(e) => setStyle(e.target.value)}>
+        <select
+          value={style}
+          onChange={(e) => setStyle(e.target.value)}
+        >
           {["professional", "polite", "firm", "urgent"].map((s) => (
             <option key={s}>{s}</option>
           ))}
@@ -425,31 +351,34 @@ export default function LetterGenerator() {
       {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
 
       {getRightsTip() && (
-        <div style={{ background: "#fff4d2", padding: "10px", marginTop: "1rem" }}>
+        <div
+          style={{
+            background: "#fff4d2",
+            padding: "10px",
+            marginTop: "1rem"
+          }}
+        >
           <strong>{t.rightsTip}</strong> {getRightsTip()}
+        </div>
+      )}
+
+      {isAboveGuideline && (
+        <div
+          style={{
+            marginTop: "1rem",
+            color: "#b45309",
+            fontWeight: "600"
+          }}
+        >
+          {t.agiWarning}
         </div>
       )}
 
       {rewritten && (
         <>
-          {/* Draft banner (NEW) */}
-          <div
-            style={{
-              marginTop: "1.5rem",
-              background: "#eef6ff",
-              border: "1px solid #b6d4fe",
-              padding: "12px",
-              borderRadius: "10px",
-              color: "#2c3e50"
-            }}
-          >
-            <strong>{t.draftNoticeTitle}</strong>
-            <div style={{ marginTop: "4px", fontSize: "0.95rem" }}>{t.draftNoticeBody}</div>
-          </div>
-
           <pre
             style={{
-              marginTop: "1rem",
+              marginTop: "2rem",
               whiteSpace: "pre-wrap",
               background: "#fff",
               padding: "20px",
@@ -459,7 +388,7 @@ export default function LetterGenerator() {
             {rewritten}
           </pre>
 
-          {renderLegalExcerpts()}
+          {renderInfoRefs()}
 
           <button
             onClick={downloadAsPDF}
