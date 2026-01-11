@@ -52,4 +52,3 @@ export default function TextToSpeech() {
     </div>
   );
 }
-export default ()=> <div>TTS</div>;
