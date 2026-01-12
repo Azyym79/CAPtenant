@@ -13,6 +13,7 @@ import LanguageSelector from "./components/LanguageSelector";
 
 // Pages
 import Home from "./pages/Home";
+import About from "./pages/About";
 import AGIExplainer from "./pages/AGIExplainer";
 import LetterGenerator from "./pages/LetterGenerator";
 import RightsFAQ from "./pages/RightsFAQ";
@@ -34,7 +35,6 @@ export default function App() {
 /* =====================================================
    🔒 GLOBAL INFORMATIONAL NOTICE (SAFE LANGUAGE)
    - Applies to ALL pages
-   - No reference to "legal information"
    - Educational / tenant-rights framing only
 ===================================================== */
 function GlobalNotice({ lang }) {
@@ -77,10 +77,6 @@ function AppShell() {
 
   /* =====================================================
      🌍 UI LANGUAGE (EN / FR ONLY — CANONICAL)
-     Priority:
-     1) URL ?lang=
-     2) localStorage
-     3) default "en"
   ===================================================== */
   const initialLang =
     searchParams.get("lang") ||
@@ -91,7 +87,6 @@ function AppShell() {
 
   /* =====================================================
      🔄 SYNC STATE ↔ URL ↔ LOCALSTORAGE
-     Preserves ALL existing query params
   ===================================================== */
   useEffect(() => {
     localStorage.setItem("captenant_lang", lang);
@@ -180,6 +175,7 @@ function AppShell() {
       <main style={{ flex: 1 }}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
           <Route path="/analyze" element={<TenantPALAnalyzer />} />
           <Route path="/agi" element={<AGIExplainer />} />
           <Route path="/letters" element={<LetterGenerator />} />
@@ -208,8 +204,18 @@ function AppShell() {
 
         <p style={{ marginTop: "0.75rem", fontSize: "0.8rem", color: "#999" }}>
           {lang === "fr"
-            ? "CAPtenant est une plateforme éducative indépendante axée sur l’information des locataires. Elle ne fournit pas de conseils juridiques."
-            : "CAPtenant is an independent educational platform focused on tenant information. It does not provide legal advice."}
+            ? "CAPtenant est une plateforme éducative indépendante axée sur l’information des locataires."
+            : "CAPtenant is an independent educational platform focused on tenant information."}
+        </p>
+
+        {/* Subtle About link */}
+        <p style={{ marginTop: "0.5rem", fontSize: "0.8rem" }}>
+          <Link
+            to={lang === "fr" ? "/about?lang=fr" : "/about"}
+            style={{ color: "#888", textDecoration: "none" }}
+          >
+            {lang === "fr" ? "À propos de CAPtenant" : "About CAPtenant"}
+          </Link>
         </p>
       </footer>
     </div>
