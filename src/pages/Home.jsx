@@ -20,7 +20,7 @@ export default function Home() {
       agiDesc:
         "Learn about Above-Guideline Rent Increases and common options tenants may consider.",
 
-      letterTitle: "Generate Letters",
+      letterTitle: "Letters",
       letterDesc:
         "Create structured draft letters for AGI concerns, repair requests, payment plans, and more.",
 
@@ -54,7 +54,7 @@ export default function Home() {
       agiDesc:
         "Découvrez les augmentations de loyer au-delà de la ligne directrice et les options couramment envisagées.",
 
-      letterTitle: "Générer des lettres",
+      letterTitle: "Lettres",
       letterDesc:
         "Créez des brouillons de lettres structurées pour les enjeux AGI, réparations, plans de paiement et plus.",
 
