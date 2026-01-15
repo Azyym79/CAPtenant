@@ -237,46 +237,92 @@ if (!shouldShowRefs) return null;
       >
         <strong>{t.refsTitle}</strong>
         <p style={{ marginTop: "0.5rem" }}>{t.refsIntro}</p>
-
+        
 <ul style={{ marginTop: "0.5rem" }}>
-  {lang === "fr" ? (
+  {isEviction && (
     <>
-      <li>
-        Les expulsions nécessitent généralement un avis valide et une procédure
-        légale devant le Tribunal de la location immobilière.
-      </li>
-      <li>
-        Les expulsions sans ordonnance du Tribunal sont généralement interdites.
-      </li>
-      <li>
-        Certains avis (par exemple pour usage personnel) peuvent entraîner une
-        obligation d’indemnisation.
-      </li>
-      <li>
-        Le Tribunal dispose d’un pouvoir discrétionnaire lors de l’analyse des
-        preuves et de la décision finale.
-      </li>
+      {lang === "fr" ? (
+        <>
+          <li>
+            Les expulsions nécessitent généralement un avis valide et une procédure
+            légale devant le Tribunal de la location immobilière.
+          </li>
+          <li>
+            Les expulsions sans ordonnance du Tribunal sont généralement interdites.
+          </li>
+          <li>
+            Certains avis (par exemple pour usage personnel) peuvent entraîner une
+            obligation d’indemnisation.
+          </li>
+          <li>
+            Le Tribunal dispose d’un pouvoir discrétionnaire lors de l’analyse des
+            preuves et de la décision finale.
+          </li>
+        </>
+      ) : (
+        <>
+          <li>
+            Evictions generally require proper notice and legal process through the
+            Landlord and Tenant Board.
+          </li>
+          <li>
+            Lockouts without an order from the Board are typically prohibited.
+          </li>
+          <li>
+            Certain notices (such as own-use notices) may trigger compensation
+            obligations.
+          </li>
+          <li>
+            The Board has discretion when reviewing evidence and determining
+            outcomes.
+          </li>
+        </>
+      )}
     </>
-  ) : (
+  )}
+
+  {isRentIncrease && (
     <>
-      <li>
-        Evictions generally require proper notice and legal process through the
-        Landlord and Tenant Board.
-      </li>
-      <li>
-        Lockouts without an order from the Board are typically prohibited.
-      </li>
-      <li>
-        Certain notices (such as own-use notices) may trigger compensation
-        obligations.
-      </li>
-      <li>
-        The Board has discretion when reviewing evidence and determining
-        outcomes.
-      </li>
+      {lang === "fr" ? (
+        <>
+          <li>
+            Les augmentations de loyer sont plafonnées par une ligne directrice
+            annuelle fixée par la province, sauf autorisation spéciale.
+          </li>
+          <li>
+            Toute augmentation supérieure à la ligne directrice nécessite une
+            approbation du Tribunal (AGI).
+          </li>
+          <li>
+            Un préavis écrit valide est obligatoire avant toute augmentation.
+          </li>
+          <li>
+            Les augmentations ne peuvent généralement avoir lieu qu’une fois tous
+            les 12 mois.
+          </li>
+        </>
+      ) : (
+        <>
+          <li>
+            Rent increases are capped by a provincial annual guideline unless
+            special approval is granted.
+          </li>
+          <li>
+            Any increase above the guideline requires approval from the Landlord
+            and Tenant Board (AGI).
+          </li>
+          <li>
+            Valid written notice is required before any rent increase takes effect.
+          </li>
+          <li>
+            Rent can generally only be increased once every 12 months.
+          </li>
+        </>
+      )}
     </>
   )}
 </ul>
+
 
         <div style={{ marginTop: "0.75rem", fontSize: "0.9rem" }}>
           <div>
