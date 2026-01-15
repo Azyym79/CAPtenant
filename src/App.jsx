@@ -150,7 +150,7 @@ function AppShell() {
         {/* RIGHT: NAV LINKS */}
         <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
           <SafeLink to="/analyze" lang={lang} en="Analyze" fr="Analyser" />
-          <SafeLink to="/agi" lang={lang} en="AGI Tool" fr="Outil AGI" />
+          <SafeLink to="/agi" lang={lang} en="AGI Explained" fr="AGI expliqué" />
           <SafeLink to="/letters" lang={lang} en="Letters" fr="Lettres" />
           <SafeLink to="/rights" lang={lang} en="Rights FAQ" fr="Droits (FAQ)" />
           <SafeLink to="/voice" lang={lang} en="Voice" fr="Voix" />
