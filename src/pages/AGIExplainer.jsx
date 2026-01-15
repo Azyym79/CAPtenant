@@ -10,12 +10,12 @@ export default function AGIExplainer() {
   const t = {
     en: {
       title: "CAPtenant AGI Explainer",
-      steps: ["Rent Details", "Case Type", "Analysis", "Assessment", "Letter"],
+      // Safer step name than “Assessment”
+      steps: ["Rent Details", "Case Type", "Analysis", "Signal Summary", "Letter"],
 
-      // Informational framing (no “legal” wording)
       infoNoticeTitle: "⚠️ Important Notice (Informational Only)",
       infoNoticeBody:
-        "This tool provides general information and estimates related to Above-Guideline Rent Increases (AGI). It does not make decisions or determinations. Only the Landlord and Tenant Board (LTB) can approve or deny an AGI. For advice tailored to your situation, consider consulting an authorized professional or official sources.",
+        "This tool provides general information and estimates related to Above-Guideline Rent Increases (AGI). It does not make decisions, predictions, or determinations. Only the Landlord and Tenant Board (LTB) can approve or deny an AGI. For guidance specific to your situation, consult official sources or an authorized professional.",
       languageAuthority:
         "CAPtenant supports additional languages for input accessibility. English and French are the primary languages used for the app’s tenant-rights content.",
 
@@ -30,33 +30,11 @@ export default function AGIExplainer() {
       analysis: "Review Case Information",
       docsQuestion: "Did the landlord provide receipts or supporting documents?",
 
-<div className="assessment-card">
-  <h3>
-    {lang === "fr"
-      ? "Résumé des signaux réglementaires (Information seulement)"
-      : "Regulatory Signal Summary (Informational Only)"}
-  </h3>
-
-  <div className="assessment-result">
-    <strong>
-      {lang === "fr"
-        ? "Signaux détectés :"
-        : "Detected signals:"}
-    </strong>
-
-    <span style={{ marginLeft: "6px" }}>
-      {lang === "fr"
-        ? "Plusieurs indicateurs réglementaires semblent correspondre aux critères généraux d’admissibilité à une AGI, selon les informations fournies."
-        : "Multiple regulatory indicators appear to align with common AGI eligibility criteria based on the information provided."}
-    </span>
-  </div>
-
-  <p className="assessment-disclaimer" style={{ marginTop: "0.75rem", fontSize: "0.9rem", color: "#555" }}>
-    {lang === "fr"
-      ? "Ce résumé est fourni à titre informatif uniquement. Il ne constitue pas un avis juridique, une prédiction ou une décision. Seul le Tribunal de la location immobilière (TLI) peut évaluer et approuver une demande d’AGI."
-      : "This summary is informational only. It does not constitute legal advice, a prediction, or a determination. Only the Landlord and Tenant Board (LTB) can assess and approve an AGI application."}
-  </p>
-</div>
+      // Step 4 text (strings only)
+      recommendation: "Regulatory Signal Summary (Informational Only)",
+      resultLabel: "Detected signals:",
+      disclaimer:
+        "This summary is informational only. It is not legal advice, a prediction, or a decision. The LTB makes the final determination based on evidence and the application record.",
 
       generate: "Generate Objection Letter",
       generateDesc:
@@ -66,7 +44,6 @@ export default function AGIExplainer() {
       next: "Next →",
       generateBtn: "Generate Letter →",
 
-      // Rename section to avoid “legal”
       ontarioContext: "📌 Ontario Context (General)",
       aboveGuideline: "Estimated above guideline by",
       notPayable:
@@ -74,11 +51,11 @@ export default function AGIExplainer() {
     },
     fr: {
       title: "Explication AGI CAPtenant",
-      steps: ["Loyer", "Type de dossier", "Analyse", "Évaluation", "Lettre"],
+      steps: ["Loyer", "Type de dossier", "Analyse", "Résumé", "Lettre"],
 
       infoNoticeTitle: "⚠️ Avis important (informatif seulement)",
       infoNoticeBody:
-        "Cet outil fournit des informations générales et des estimations concernant les augmentations au-delà de la ligne directrice (AGI). Il ne rend pas de décision. Seule la Commission de la location immobilière (CLI/TGO) peut approuver ou refuser une AGI. Pour des conseils adaptés à votre situation, consultez des sources officielles ou un professionnel autorisé.",
+        "Cet outil fournit des informations générales et des estimations concernant les augmentations au-delà de la ligne directrice (AGI). Il ne rend pas de décision, ne fait pas de prédiction et ne détermine pas d’issue. Seule la Commission de la location immobilière (TLI/LTB) peut approuver ou refuser une AGI. Pour des indications adaptées à votre situation, consultez des sources officielles ou un professionnel autorisé.",
       languageAuthority:
         "CAPtenant offre d’autres langues pour faciliter la saisie. L’anglais et le français sont les langues principales pour le contenu sur les droits des locataires.",
 
@@ -93,9 +70,10 @@ export default function AGIExplainer() {
       analysis: "Analyse des informations",
       docsQuestion: "Le propriétaire a-t-il fourni des reçus ou documents justificatifs ?",
 
-recommendation: "Résumé des signaux réglementaires (Information seulement)",
-resultLabel: "Signaux détectés :",
-
+      recommendation: "Résumé des signaux réglementaires (information seulement)",
+      resultLabel: "Signaux détectés :",
+      disclaimer:
+        "Ce résumé est fourni à titre informatif uniquement. Il ne constitue pas un avis juridique, une prédiction ou une décision. Le TLI/LTB rend la décision finale selon la preuve et le dossier.",
 
       generate: "Générer une lettre d’opposition",
       generateDesc:
@@ -108,7 +86,7 @@ resultLabel: "Signaux détectés :",
       ontarioContext: "📌 Contexte en Ontario (général)",
       aboveGuideline: "Dépassement estimé de la ligne directrice de",
       notPayable:
-        "En Ontario, la portion AGI n’est généralement pas exigible sans l’approbation de la CLI/TGO. Pour votre situation, vérifiez via des sources officielles ou un professionnel autorisé."
+        "En Ontario, la portion AGI n’est généralement pas exigible sans l’approbation du TLI/LTB. Pour votre situation, vérifiez via des sources officielles ou un professionnel autorisé."
     }
   }[lang];
 
@@ -120,7 +98,7 @@ resultLabel: "Signaux détectés :",
   const [caseType, setCaseType] = useState("");
   const [hasDocs, setHasDocs] = useState(null);
 
-  // --- CALCULATIONS (UNCHANGED) ---
+  // --- CALCULATIONS ---
   const agiPercent =
     currentRent && newRent
       ? (((newRent - currentRent) / currentRent) * 100).toFixed(2)
@@ -135,7 +113,7 @@ resultLabel: "Signaux détectés :",
     ? (Number(agiPercent) - ONTARIO_GUIDELINE_2025).toFixed(2)
     : 0;
 
-  // --- CASE TYPES (UNCHANGED DATA + FLOW) ---
+  // --- CASE TYPES (kept) ---
   const caseTypes = [
     { en: "Elevator Modernization", fr: "Modernisation des ascenseurs", strength: "High" },
     { en: "Roof Replacement", fr: "Remplacement de la toiture", strength: "High" },
@@ -149,54 +127,77 @@ resultLabel: "Signaux détectés :",
     { en: "Tenant-Caused Damage", fr: "Dommages causés par le locataire", strength: "None" }
   ];
 
-  // Softened wording (still returns a string used later)
-  const getStrength = () => {
+  // ✅ SAFER: signal wording (no “strong/weak/eligible”)
+  const getSignalSummary = () => {
     const selected = caseTypes.find((c) => c.en === caseType || c.fr === caseType);
-    if (!selected) return lang === "fr" ? "Inconnu" : "Unknown";
+    if (!selected) {
+      return lang === "fr"
+        ? "Aucun type de dossier sélectionné. Ajoutez une catégorie pour afficher des signaux généraux."
+        : "No case type selected. Choose a category to show general signals.";
+    }
 
-    if (selected.strength === "High")
-      return hasDocs
+    const docsText =
+      hasDocs === true
+        ? (lang === "fr" ? "Des documents semblent disponibles." : "Documentation appears to be available.")
+        : hasDocs === false
+          ? (lang === "fr" ? "Les documents ne semblent pas disponibles." : "Documentation does not appear to be available.")
+          : (lang === "fr" ? "Disponibilité des documents inconnue." : "Documentation availability is unknown.");
+
+    // category signal
+    let categorySignal = "";
+    if (selected.strength === "High") {
+      categorySignal =
+        lang === "fr"
+          ? "La catégorie choisie correspond souvent à des types de travaux invoqués dans des demandes d’AGI."
+          : "The selected category often aligns with work types commonly cited in AGI applications.";
+    } else if (selected.strength === "Medium") {
+      categorySignal =
+        lang === "fr"
+          ? "La catégorie choisie peut parfois être invoquée, selon les preuves et le contexte."
+          : "The selected category may sometimes be cited, depending on evidence and context.";
+    } else if (selected.strength === "Low") {
+      categorySignal =
+        lang === "fr"
+          ? "La catégorie choisie correspond plus souvent à des éléments moins susceptibles de soutenir une AGI."
+          : "The selected category more often aligns with items that are less likely to support an AGI.";
+    } else {
+      categorySignal =
+        lang === "fr"
+          ? "La catégorie choisie est généralement moins pertinente pour une AGI, selon les descriptions courantes."
+          : "The selected category is generally less relevant to an AGI, based on common descriptions.";
+    }
+
+    const percentSignal =
+      isAboveGuideline
         ? (lang === "fr"
-            ? "Indicativement fort (avec justificatifs)"
-            : "Indicatively strong (with documentation)")
+            ? `L’augmentation estimée dépasse la ligne directrice de ${abovePercent}%.`
+            : `The estimated increase is above the guideline by ${abovePercent}%.`)
         : (lang === "fr"
-            ? "Potentiellement fort (documents requis)"
-            : "Potentially strong (documentation needed)");
+            ? "L’augmentation estimée ne semble pas dépasser la ligne directrice."
+            : "The estimated increase does not appear to exceed the guideline.");
 
-    if (selected.strength === "Medium")
-      return hasDocs
-        ? (lang === "fr" ? "Modéré" : "Moderate")
-        : (lang === "fr"
-            ? "Potentiellement faible (documents requis)"
-            : "Potentially weak (documentation needed)");
-
-    if (selected.strength === "Low")
-      return lang === "fr" ? "Généralement peu probable" : "Generally unlikely";
-
-    if (selected.strength === "None")
-      return lang === "fr" ? "Généralement non admissible" : "Generally not eligible";
-
-    return lang === "fr" ? "Inconnu" : "Unknown";
+    return lang === "fr"
+      ? `${categorySignal} ${docsText} ${percentSignal}`
+      : `${categorySignal} ${docsText} ${percentSignal}`;
   };
 
-  // --- AUTO-POPULATE TO LETTER GENERATOR (UNCHANGED FLOW) ---
+  // --- AUTO-POPULATE TO LETTER GENERATOR ---
   const generateLetter = () => {
-    const strength = getStrength();
+    const signalSummary = getSignalSummary();
 
     const summary =
       lang === "fr"
-        ? `Type de dossier AGI (catégorie): ${caseType}. Augmentation estimée: ${agiPercent}%. Augmentation mensuelle estimée: $${monthlyInc}. Documents fournis: ${
+        ? `Type de dossier AGI (catégorie) : ${caseType}. Augmentation estimée : ${agiPercent}%. Augmentation mensuelle estimée : $${monthlyInc}. Documents fournis : ${
             hasDocs ? "Oui" : "Non"
-          }. Évaluation indicative: ${strength}.`
+          }. Résumé informatif des signaux : ${signalSummary}`
         : `AGI case type (category): ${caseType}. Estimated increase: ${agiPercent}%. Estimated monthly increase: $${monthlyInc}. Documentation provided: ${
             hasDocs ? "Yes" : "No"
-          }. Indicative assessment: ${strength}.`;
+          }. Informational signal summary: ${signalSummary}`;
 
     const tone =
-      strength.toLowerCase().includes("faible") ||
-      strength.toLowerCase().includes("weak") ||
-      strength.toLowerCase().includes("peu probable") ||
-      strength.toLowerCase().includes("unlikely")
+      (lang === "fr"
+        ? signalSummary.toLowerCase().includes("moins")
+        : signalSummary.toLowerCase().includes("less"))
         ? "firm"
         : "professional";
 
@@ -216,25 +217,12 @@ resultLabel: "Signaux détectés :",
   };
 
   return (
-    <div
-      style={{
-        padding: "2rem",
-        maxWidth: "900px",
-        margin: "auto",
-        fontFamily: "sans-serif"
-      }}
-    >
-      <h1
-        style={{
-          color: "#333",
-          borderBottom: "2px solid #4d97ff",
-          paddingBottom: "10px"
-        }}
-      >
+    <div style={{ padding: "2rem", maxWidth: "900px", margin: "auto", fontFamily: "sans-serif" }}>
+      <h1 style={{ color: "#333", borderBottom: "2px solid #4d97ff", paddingBottom: "10px" }}>
         {t.title}
       </h1>
 
-      {/* Informational notice (kept, but no “legal” wording) */}
+      {/* Informational notice */}
       <div
         style={{
           marginTop: "1rem",
@@ -250,9 +238,7 @@ resultLabel: "Signaux détectés :",
       >
         <div style={{ fontWeight: "800", marginBottom: "6px" }}>{t.infoNoticeTitle}</div>
         <div style={{ fontSize: "0.95rem" }}>{t.infoNoticeBody}</div>
-        <div style={{ marginTop: "8px", fontSize: "0.9rem", color: "#666" }}>
-          {t.languageAuthority}
-        </div>
+        <div style={{ marginTop: "8px", fontSize: "0.9rem", color: "#666" }}>{t.languageAuthority}</div>
       </div>
 
       {/* STEP PROGRESS BAR */}
@@ -275,7 +261,7 @@ resultLabel: "Signaux détectés :",
         ))}
       </div>
 
-      {/* STEP 1: RENT DETAILS */}
+      {/* STEP 1 */}
       {step === 1 && (
         <StepCard>
           <div style={{ marginBottom: "15px" }}>
@@ -318,9 +304,7 @@ resultLabel: "Signaux détectés :",
           {isAboveGuideline && (
             <div style={contextBox}>
               <strong>{t.ontarioContext}</strong>
-              <p style={{ margin: "5px 0" }}>
-                • {t.aboveGuideline} {abovePercent}%
-              </p>
+              <p style={{ margin: "5px 0" }}>• {t.aboveGuideline} {abovePercent}%</p>
               <p style={{ margin: "5px 0" }}>• {t.notPayable}</p>
             </div>
           )}
@@ -331,15 +315,11 @@ resultLabel: "Signaux détectés :",
         </StepCard>
       )}
 
-      {/* STEP 2: CASE TYPE */}
+      {/* STEP 2 */}
       {step === 2 && (
         <StepCard>
           <h2>{t.selectCase}</h2>
-          <select
-            style={inputStyle}
-            value={caseType}
-            onChange={(e) => setCaseType(e.target.value)}
-          >
+          <select style={inputStyle} value={caseType} onChange={(e) => setCaseType(e.target.value)}>
             <option value="">-- {t.selectCase} --</option>
             {caseTypes.map((c) => (
               <option key={c.en} value={lang === "fr" ? c.fr : c.en}>
@@ -354,23 +334,17 @@ resultLabel: "Signaux détectés :",
         </StepCard>
       )}
 
-      {/* STEP 3: DOCUMENTATION */}
+      {/* STEP 3 */}
       {step === 3 && (
         <StepCard>
           <h2>{t.analysis}</h2>
           <p style={{ fontSize: "1.1rem" }}>{t.docsQuestion}</p>
 
           <div style={{ display: "flex", gap: "10px", margin: "20px 0" }}>
-            <button
-              style={hasDocs === true ? activeToggle : inactiveToggle}
-              onClick={() => setHasDocs(true)}
-            >
+            <button style={hasDocs === true ? activeToggle : inactiveToggle} onClick={() => setHasDocs(true)}>
               {t.yes}
             </button>
-            <button
-              style={hasDocs === false ? activeToggle : inactiveToggle}
-              onClick={() => setHasDocs(false)}
-            >
+            <button style={hasDocs === false ? activeToggle : inactiveToggle} onClick={() => setHasDocs(false)}>
               {t.no}
             </button>
           </div>
@@ -381,7 +355,7 @@ resultLabel: "Signaux détectés :",
         </StepCard>
       )}
 
-      {/* STEP 4: ASSESSMENT */}
+      {/* STEP 4: SIGNAL SUMMARY */}
       {step === 4 && (
         <StepCard>
           <h2>{t.recommendation}</h2>
@@ -392,14 +366,15 @@ resultLabel: "Signaux détectés :",
               background: "#f0f7ff",
               borderRadius: "8px",
               border: "1px solid #b6d4fe",
-              fontSize: "1.2rem"
+              fontSize: "1.05rem",
+              lineHeight: "1.5"
             }}
           >
-            <strong>{t.resultLabel}</strong> {getStrength()}
-            <div style={{ marginTop: "10px", fontSize: "0.95rem", color: "#6c757d" }}>
-              {lang === "fr"
-                ? "Cette évaluation est indicative et dépend des faits et des documents. La décision finale appartient à la CLI/TGO."
-                : "This assessment is indicative and depends on facts and documentation. The final decision rests with the LTB."}
+            <strong>{t.resultLabel}</strong>
+            <div style={{ marginTop: "10px" }}>{getSignalSummary()}</div>
+
+            <div style={{ marginTop: "12px", fontSize: "0.95rem", color: "#6c757d" }}>
+              {t.disclaimer}
             </div>
           </div>
 
@@ -409,7 +384,7 @@ resultLabel: "Signaux détectés :",
         </StepCard>
       )}
 
-      {/* STEP 5: FINAL GENERATION */}
+      {/* STEP 5 */}
       {step === 5 && (
         <StepCard>
           <h2>{t.generate}</h2>
@@ -423,7 +398,7 @@ resultLabel: "Signaux détectés :",
   );
 }
 
-// --- STYLES (UNCHANGED) ---
+/* --- STYLES --- */
 const StepCard = ({ children }) => (
   <div
     style={{
@@ -442,9 +417,6 @@ const labelStyle = { display: "block", marginBottom: "8px", fontWeight: "bold", 
 const inputStyle = { width: "100%", padding: "12px", borderRadius: "8px", border: "1px solid #ccc", fontSize: "16px", boxSizing: "border-box" };
 const btnStyle = { marginTop: "20px", padding: "12px 24px", background: "#4d97ff", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold", fontSize: "16px" };
 const calcBox = { marginTop: "20px", padding: "15px", background: "#f8f9fa", borderRadius: "8px", lineHeight: "1.6" };
-
-// renamed var to avoid “legal” naming, but style kept
 const contextBox = { marginTop: "15px", padding: "15px", background: "#fff3cd", border: "1px solid #ffeeba", borderRadius: "8px", color: "#856404", fontSize: "14px" };
-
 const activeToggle = { flex: 1, padding: "12px", background: "#4d97ff", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" };
 const inactiveToggle = { flex: 1, padding: "12px", background: "#e9ecef", color: "#333", border: "none", borderRadius: "8px", cursor: "pointer" };
