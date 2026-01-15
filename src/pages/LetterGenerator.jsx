@@ -231,23 +231,45 @@ export default function LetterGenerator() {
         <strong>{t.refsTitle}</strong>
         <p style={{ marginTop: "0.5rem" }}>{t.refsIntro}</p>
 
-        <ul style={{ marginTop: "0.5rem" }}>
-          <li>
-            Evictions generally require proper notice and legal process through
-            the Landlord and Tenant Board.
-          </li>
-          <li>
-            Lockouts without an order from the Board are typically prohibited.
-          </li>
-          <li>
-            Certain notices (such as own-use notices) may trigger compensation
-            obligations.
-          </li>
-          <li>
-            The Board has discretion when reviewing evidence and determining
-            outcomes.
-          </li>
-        </ul>
+<ul style={{ marginTop: "0.5rem" }}>
+  {lang === "fr" ? (
+    <>
+      <li>
+        Les expulsions nécessitent généralement un avis valide et une procédure
+        légale devant le Tribunal de la location immobilière.
+      </li>
+      <li>
+        Les expulsions sans ordonnance du Tribunal sont généralement interdites.
+      </li>
+      <li>
+        Certains avis (par exemple pour usage personnel) peuvent entraîner une
+        obligation d’indemnisation.
+      </li>
+      <li>
+        Le Tribunal dispose d’un pouvoir discrétionnaire lors de l’analyse des
+        preuves et de la décision finale.
+      </li>
+    </>
+  ) : (
+    <>
+      <li>
+        Evictions generally require proper notice and legal process through the
+        Landlord and Tenant Board.
+      </li>
+      <li>
+        Lockouts without an order from the Board are typically prohibited.
+      </li>
+      <li>
+        Certain notices (such as own-use notices) may trigger compensation
+        obligations.
+      </li>
+      <li>
+        The Board has discretion when reviewing evidence and determining
+        outcomes.
+      </li>
+    </>
+  )}
+</ul>
 
         <div style={{ marginTop: "0.75rem", fontSize: "0.9rem" }}>
           <div>
