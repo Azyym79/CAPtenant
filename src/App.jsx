@@ -151,7 +151,7 @@ function AppShell() {
         <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
           <SafeLink to="/agi" lang={lang} en="AGI Explained" fr="AGI expliqué" />
           <SafeLink to="/letters" lang={lang} en="Letters" fr="Lettres" />
-          <SafeLink to="/rights" lang={lang} en="Rights FAQ" fr="Droits (FAQ)" />
+          <SafeLink to="/rights" lang={lang} en="Rental Info" fr="Info locative" />
           <SafeLink to="/voice" lang={lang} en="Voice" fr="Voix" />
           <SafeLink to="/glossary" lang={lang} en="Glossary" fr="Glossaire" />
 
