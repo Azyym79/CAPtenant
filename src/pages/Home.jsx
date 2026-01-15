@@ -15,50 +15,63 @@ export default function Home() {
       desc:
         "CAPtenant helps tenants understand Ontario’s rental rules and tenant rights, supporting early communication and informed decisions.",
       tagline: "Helping tenants find their way — before disputes escalate.",
+
       agiTitle: "AGI Explained",
       agiDesc:
         "Learn about Above-Guideline Rent Increases and common options tenants may consider.",
+
       letterTitle: "Generate Letters",
       letterDesc:
         "Create structured draft letters for AGI concerns, repair requests, payment plans, and more.",
-      rightsTitle: "Tenant Rights (Info)",
+
+      rightsTitle: "Rights FAQ",
       rightsDesc:
         "Explore common tenant protections and rental rules in Ontario — simplified and easy to understand.",
-      voiceTitle: "Voice Assistant",
+
+      voiceTitle: "Voice",
       voiceDesc:
-        "Describe your situation or provide details hands-free. Supports multiple languages for convenience.",
+        "Describe your situation or enter details using voice for easier navigation.",
       voiceNote:
         "All outputs and generated letters are provided in English or French.",
+
       glossaryTitle: "Glossary",
       glossaryDesc:
-        "Explore commonly used rental terms like AGI, N12, eviction orders, and more — simplified.",
+        "Explore commonly used rental terms like AGI, N12, eviction notices, and more.",
+
       switchBtn: "Français",
       infoDisclaimer:
         "CAPtenant provides general information for educational purposes only."
     },
+
     fr: {
       title: "Bienvenue sur CAPtenant",
       desc:
         "CAPtenant aide les locataires à comprendre les règles locatives et les droits des locataires en Ontario, favorisant une communication précoce et des décisions éclairées.",
       tagline:
         "Aider les locataires à trouver leur voie — avant que les différends ne s’aggravent.",
+
       agiTitle: "AGI expliqué",
       agiDesc:
         "Découvrez les augmentations de loyer au-delà de la ligne directrice et les options couramment envisagées.",
+
       letterTitle: "Générer des lettres",
       letterDesc:
         "Créez des brouillons de lettres structurées pour les enjeux AGI, réparations, plans de paiement et plus.",
-      rightsTitle: "Droits des locataires (Info)",
+
+      rightsTitle: "Droits (FAQ)",
       rightsDesc:
-        "Découvrez les protections locatives et règles de location courantes en Ontario — expliquées simplement.",
-      voiceTitle: "Assistant vocal",
+        "Consultez les règles locatives et protections des locataires en Ontario — simplifiées et faciles à comprendre.",
+
+      voiceTitle: "Voix",
       voiceDesc:
-        "Décrivez votre situation ou fournissez des informations mains libres. Prend en charge plusieurs langues.",
+        "Décrivez votre situation ou saisissez des informations à la voix pour faciliter la navigation.",
       voiceNote:
         "Les résultats et lettres générées sont fournis en anglais ou en français.",
+
       glossaryTitle: "Glossaire",
       glossaryDesc:
-        "Explorez des termes locatifs courants comme AGI, N12, avis d’expulsion et plus — simplifiés.",
+        "Explorez les termes courants liés à la location comme AGI, N12, avis d’éviction, et plus encore.",
+
       switchBtn: "English",
       infoDisclaimer:
         "CAPtenant fournit des informations générales à des fins éducatives uniquement."
