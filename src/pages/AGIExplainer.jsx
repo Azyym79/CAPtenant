@@ -30,8 +30,33 @@ export default function AGIExplainer() {
       analysis: "Review Case Information",
       docsQuestion: "Did the landlord provide receipts or supporting documents?",
 
-      recommendation: "Indicative Assessment (Non-Binding)",
-      resultLabel: "Indicative result:",
+<div className="assessment-card">
+  <h3>
+    {lang === "fr"
+      ? "Résumé des signaux réglementaires (Information seulement)"
+      : "Regulatory Signal Summary (Informational Only)"}
+  </h3>
+
+  <div className="assessment-result">
+    <strong>
+      {lang === "fr"
+        ? "Signaux détectés :"
+        : "Detected signals:"}
+    </strong>
+
+    <span style={{ marginLeft: "6px" }}>
+      {lang === "fr"
+        ? "Plusieurs indicateurs réglementaires semblent correspondre aux critères généraux d’admissibilité à une AGI, selon les informations fournies."
+        : "Multiple regulatory indicators appear to align with common AGI eligibility criteria based on the information provided."}
+    </span>
+  </div>
+
+  <p className="assessment-disclaimer" style={{ marginTop: "0.75rem", fontSize: "0.9rem", color: "#555" }}>
+    {lang === "fr"
+      ? "Ce résumé est fourni à titre informatif uniquement. Il ne constitue pas un avis juridique, une prédiction ou une décision. Seul le Tribunal de la location immobilière (TLI) peut évaluer et approuver une demande d’AGI."
+      : "This summary is informational only. It does not constitute legal advice, a prediction, or a determination. Only the Landlord and Tenant Board (LTB) can assess and approve an AGI application."}
+  </p>
+</div>
 
       generate: "Generate Objection Letter",
       generateDesc:
@@ -68,8 +93,9 @@ export default function AGIExplainer() {
       analysis: "Analyse des informations",
       docsQuestion: "Le propriétaire a-t-il fourni des reçus ou documents justificatifs ?",
 
-      recommendation: "Évaluation indicative (non contraignante)",
-      resultLabel: "Résultat indicatif :",
+recommendation: "Résumé des signaux réglementaires (Information seulement)",
+resultLabel: "Signaux détectés :",
+
 
       generate: "Générer une lettre d’opposition",
       generateDesc:
