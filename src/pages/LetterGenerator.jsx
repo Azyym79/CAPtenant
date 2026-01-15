@@ -24,7 +24,9 @@ const UI = {
     agiWarning:
       "⚠️ Notice: The increase described exceeds Ontario’s annual guideline.",
     download: "Download PDF",
-    refsTitle: "Relevant Ontario Rental Rules (Informational)"
+    refsTitle: "Relevant Ontario Rental Rules (Informational)",
+    refsIntro:
+      "The following high-level references may help you better understand your rights and options under Ontario law:"
   },
   fr: {
     title: "Générateur de lettres CAPtenant",
@@ -42,7 +44,9 @@ const UI = {
     agiWarning:
       "⚠️ Avis : l’augmentation décrite dépasse la ligne directrice annuelle.",
     download: "Télécharger le PDF",
-    refsTitle: "Règles locatives pertinentes en Ontario (information)"
+    refsTitle: "Règles locatives pertinentes en Ontario (information)",
+    refsIntro:
+      "Les références suivantes peuvent vous aider à mieux comprendre vos droits et options selon la loi ontarienne :"
   }
 };
 
@@ -217,7 +221,7 @@ export default function LetterGenerator() {
       <div
         style={{
           marginTop: "2rem",
-          padding: "1rem",
+          padding: "1.2rem",
           background: "#f1f3f5",
           borderLeft: "5px solid #0d6efd",
           borderRadius: "6px",
@@ -225,12 +229,51 @@ export default function LetterGenerator() {
         }}
       >
         <strong>{t.refsTitle}</strong>
+        <p style={{ marginTop: "0.5rem" }}>{t.refsIntro}</p>
+
         <ul style={{ marginTop: "0.5rem" }}>
-          <li>Restrictions on lockouts</li>
-          <li>Notice requirements for entry</li>
-          <li>Conditions for own-use notices</li>
-          <li>Board discretion in eviction outcomes</li>
+          <li>
+            Evictions generally require proper notice and legal process through
+            the Landlord and Tenant Board.
+          </li>
+          <li>
+            Lockouts without an order from the Board are typically prohibited.
+          </li>
+          <li>
+            Certain notices (such as own-use notices) may trigger compensation
+            obligations.
+          </li>
+          <li>
+            The Board has discretion when reviewing evidence and determining
+            outcomes.
+          </li>
         </ul>
+
+        <div style={{ marginTop: "0.75rem", fontSize: "0.9rem" }}>
+          <div>
+            📘 Ontario Residential Tenancies Act:
+            <br />
+            <a
+              href="https://www.ontario.ca/laws/statute/06r17"
+              target="_blank"
+              rel="noreferrer"
+            >
+              https://www.ontario.ca/laws/statute/06r17
+            </a>
+          </div>
+
+          <div style={{ marginTop: "0.5rem" }}>
+            ⚖️ Tribunals Ontario — Landlord and Tenant Board:
+            <br />
+            <a
+              href="https://tribunalsontario.ca/ltb/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              https://tribunalsontario.ca/ltb/
+            </a>
+          </div>
+        </div>
       </div>
     );
   };
