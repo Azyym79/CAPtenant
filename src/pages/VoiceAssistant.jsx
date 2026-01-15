@@ -243,7 +243,27 @@ export default function VoiceAssistant() {
         ))}
       </select>
 
-      <button onClick={startListening} style={{ marginTop: "2rem" }}>
+      <button
+        onClick={startListening}
+        disabled={isListening || loading}
+        style={{
+          marginTop: "2rem",
+          width: "70px",
+          height: "70px",
+          borderRadius: "50%",
+          fontSize: "2rem",
+          border: "none",
+          cursor: isListening ? "not-allowed" : "pointer",
+          background: isListening ? "#d32f2f" : "#eeeeee",
+          color: isListening ? "white" : "#333",
+          boxShadow: isListening
+            ? "0 0 12px rgba(211,47,47,0.8)"
+            : "0 2px 6px rgba(0,0,0,0.15)",
+          animation: isListening ? "pulse 1.2s infinite" : "none",
+          transition: "all 0.2s ease"
+        }}
+        title={isListening ? t.listening : "Start recording"}
+      >
         🎤
       </button>
 
