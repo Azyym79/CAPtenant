@@ -1,4 +1,3 @@
-
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -23,7 +22,11 @@ if (!process.env.OPENAI_API_KEY) {
   console.error("❌ ERROR: OPENAI_API_KEY is missing.");
   process.exit(1);
 } else {
-  console.log("✅ API Key Loaded: " + process.env.OPENAI_API_KEY.substring(0, 5) + "...");
+  console.log(
+    "✅ API Key Loaded: " +
+      process.env.OPENAI_API_KEY.substring(0, 5) +
+      "..."
+  );
 }
 console.log("------------------------------------------------");
 
@@ -38,6 +41,11 @@ app.get("/", (req, res) => {
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /* -------------------------------------------------------------
+   REGULATORY CONSTANTS
+------------------------------------------------------------- */
+const CURRENT_ONTARIO_GUIDELINE = 2.5;
+
+/* -------------------------------------------------------------
    ROUTE 1: LETTER GENERATOR (STRICT EN-CA / FR-CA)
 ------------------------------------------------------------- */
 app.post("/rewrite", async (req, res) => {
@@ -45,7 +53,8 @@ app.post("/rewrite", async (req, res) => {
   if (!text) return res.status(400).json({ error: "Missing text field." });
 
   // 🔒 HARD LOCK: Canadian Official Languages Only
-  const letterLang = (language === "fr" || language === "fr-CA") ? "fr-CA" : "en-CA";
+  const letterLang =
+    language === "fr" || language === "fr-CA" ? "fr-CA" : "en-CA";
 
   try {
     const prompt = `
@@ -74,7 +83,9 @@ CONTEXT:
       temperature: 0.5
     });
 
-    res.json({ rewritten: completion.choices[0].message.content.trim() });
+    res.json({
+      rewritten: completion.choices[0].message.content.trim()
+    });
   } catch (err) {
     console.error("Rewrite Error:", err.message);
     res.status(500).json({ error: "Rewrite failed." });
@@ -90,6 +101,18 @@ const askAIHandler = async (req, res) => {
 
   try {
     const prompt = `
+SYSTEM RULES (MANDATORY):
+
+- Never reference past years (e.g., 2023, 2022, etc.).
+- Do NOT include any calendar years in responses.
+- If discussing rent increases, always state:
+  "Ontario’s current annual rent increase guideline is approximately ${CURRENT_ONTARIO_GUIDELINE}% unless an above-guideline increase is approved."
+- If an exact number is uncertain, speak generally without mentioning a year.
+- Responses must remain informational only. No legal advice.
+- Maintain a professional, neutral tone.
+
+------------------------------------------------------------
+
 You are CAPtenant, a multilingual Ontario tenant assistant.
 
 CONVERSATION RULES:
@@ -136,7 +159,9 @@ app.post("/rewrite-multilingual", async (req, res) => {
       messages: [{ role: "user", content: prompt }]
     });
     res.json(JSON.parse(completion.choices[0].message.content));
-  } catch (err) { res.status(500).json({ error: "Failed" }); }
+  } catch (err) {
+    res.status(500).json({ error: "Failed" });
+  }
 });
 
 const analyzerHandler = async (req, res) => {
@@ -150,7 +175,9 @@ const analyzerHandler = async (req, res) => {
       temperature: 0.3
     });
     res.json(JSON.parse(completion.choices[0].message.content));
-  } catch (err) { res.status(500).json({ error: "Failed" }); }
+  } catch (err) {
+    res.status(500).json({ error: "Failed" });
+  }
 };
 app.post("/captenant-rewrite", analyzerHandler);
 
