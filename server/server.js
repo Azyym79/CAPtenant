@@ -46,6 +46,18 @@ const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const CURRENT_ONTARIO_GUIDELINE = 2.5;
 
 /* -------------------------------------------------------------
+   SAFETY: STRIP ACCIDENTAL YEAR REFERENCES (DEFENSE-IN-DEPTH)
+------------------------------------------------------------- */
+const stripYearReferences = (text = "") => {
+  if (typeof text !== "string") return text;
+
+  // Matches years like 1999, 2020, 2023, 2025, etc.
+  const YEAR_REGEX = /\b(19|20)\d{2}\b/g;
+
+  return text.replace(YEAR_REGEX, "").replace(/\s{2,}/g, " ").trim();
+};
+
+/* -------------------------------------------------------------
    ROUTE 1: LETTER GENERATOR (STRICT EN-CA / FR-CA)
 ------------------------------------------------------------- */
 app.post("/rewrite", async (req, res) => {
@@ -136,7 +148,15 @@ User input: "${text}"
       messages: [{ role: "user", content: prompt }]
     });
 
-    res.json(JSON.parse(completion.choices[0].message.content));
+   const parsed = JSON.parse(completion.choices[0].message.content);
+
+// Defensive cleanup: strip any accidental year leakage
+if (parsed?.answer) {
+  parsed.answer = stripYearReferences(parsed.answer);
+}
+
+res.json(parsed);
+
   } catch (err) {
     console.error("Ask AI Error:", err.message);
     res.status(500).json({ error: "AI failed." });
