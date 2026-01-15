@@ -209,13 +209,20 @@ export default function LetterGenerator() {
   ========================================= */
   const renderInfoRefs = () => {
     const raw = inputText || "";
-    const isEviction =
-      incomingIntent.includes("evict") ||
-      raw.includes("إخلاء") ||
-      /\bnikal(na)?\b/i.test(raw) ||
-      /sans préavis|without notice/i.test(raw);
+const isEviction =
+  incomingIntent.includes("evict") ||
+  raw.includes("إخلاء") ||
+  /\bnikal(na)?\b/i.test(raw) ||
+  /sans préavis|without notice/i.test(raw);
 
-    if (!isEviction) return null;
+const isRentIncrease =
+  incomingIntent.includes("rent") ||
+  incomingIntent.includes("increase") ||
+  raw.includes("%") ||
+  /increase|rent|augmentation|loyer|hausse/i.test(raw);
+
+const shouldShowRefs = isEviction || isRentIncrease;
+if (!shouldShowRefs) return null;
 
     return (
       <div
