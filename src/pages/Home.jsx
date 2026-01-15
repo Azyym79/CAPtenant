@@ -24,9 +24,9 @@ export default function Home() {
       letterDesc:
         "Create structured draft letters for AGI concerns, repair requests, payment plans, and more.",
 
-      rightsTitle: "Rights FAQ",
-      rightsDesc:
-        "Explore common tenant protections and rental rules in Ontario — simplified and easy to understand.",
+rightsTitle: "Rental Info",
+rightsDesc:
+  "Learn more about Ontario’s rental rules and how tenancies generally work — simplified and easy to understand.",
 
       voiceTitle: "Voice",
       voiceDesc:
@@ -58,9 +58,9 @@ export default function Home() {
       letterDesc:
         "Créez des brouillons de lettres structurées pour les enjeux AGI, réparations, plans de paiement et plus.",
 
-      rightsTitle: "Droits (FAQ)",
-      rightsDesc:
-        "Consultez les règles locatives et protections des locataires en Ontario — simplifiées et faciles à comprendre.",
+rightsTitle: "Info locative",
+rightsDesc:
+  "Apprenez-en davantage sur les règles locatives en Ontario et le fonctionnement général des locations — expliqué simplement.",
 
       voiceTitle: "Voix",
       voiceDesc:
