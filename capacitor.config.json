@@ -1,0 +1,8 @@
+{
+  "appId": "com.captenant.app",
+  "appName": "CAPtenant",
+  "server": {
+    "url": "https://captenant.com",
+    "cleartext": false
+  }
+}
