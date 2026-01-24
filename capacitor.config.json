@@ -1,6 +1,7 @@
 {
   "appId": "com.captenant.app",
   "appName": "CAPtenant",
+  "webDir": "dist",
   "server": {
     "url": "https://captenant.com",
     "cleartext": false
