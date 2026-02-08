@@ -2,8 +2,9 @@
   "appId": "com.captenant.app",
   "appName": "CAPtenant",
   "webDir": "dist",
+  "bundledWebRuntime": false,
   "server": {
-    "url": "https://captenant.com",
-    "cleartext": false
+    "url": "http://10.0.2.2:5173",
+    "cleartext": true
   }
 }
